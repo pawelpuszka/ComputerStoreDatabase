@@ -23,11 +23,11 @@ COMMENT ON COLUMN addresses.city IS
 
 COMMENT ON COLUMN addresses.postal_code IS
     'CHECK zawiera tylko liczby
-PL/SQL wpisany jako jeden ci¹g znaków ';
+PL/SQL wpisany jako jeden ciï¿½g znakï¿½w ';
 
 COMMENT ON COLUMN addresses.phone_number IS
     'CHECK zawiera tylko liczby
-PL/SQL wpisany jako jeden ci¹g znaków ';
+PL/SQL wpisany jako jeden ciï¿½g znakï¿½w ';
 
 ALTER TABLE addresses ADD CONSTRAINT adresses_pk PRIMARY KEY ( address_id );
 
@@ -61,27 +61,28 @@ ALTER TABLE employee_positions ADD CONSTRAINT employeepositions_pk PRIMARY KEY (
 
 ALTER TABLE employee_positions ADD CONSTRAINT employeepositions__un UNIQUE ( position_name );
 
+--DROP TABLE employees;
 CREATE TABLE employees (
     employee_id         INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
-    "employee_name "    NVARCHAR2(20) NOT NULL,
-    "employee_surname " NVARCHAR2(30) NOT NULL,
-    "pesel "            NVARCHAR2(11),
-    address_id          INTEGER NOT NULL,
-    contract_id         SMALLINT NOT NULL
+    employee_name    NVARCHAR2(20) NOT NULL,
+    employee_surname NVARCHAR2(30) NOT NULL,
+    pesel            VARCHAR2(11),
+    address_id          INTEGER,
+    contract_id         SMALLINT
 );
 
-COMMENT ON COLUMN employees."pesel " IS
+COMMENT ON COLUMN employees.pesel IS
     'identyfikator pesel pracownika';
 
 COMMENT ON COLUMN employees.address_id IS
-    'id adresu zamieszkania pracownika, klucz obcy powi¹zany z tabel¹ Addresses';
+    'id adresu zamieszkania pracownika, klucz obcy powiï¿½zany z tabelï¿½ Addresses';
 
 COMMENT ON COLUMN employees.contract_id IS
-    'id rodzaju umowy pracownika, klucy obcz powizany z tabel¹ EmployeeContracts';
+    'id rodzaju umowy pracownika, klucy obcz powizany z tabelï¿½ EmployeeContracts';
 
 ALTER TABLE employees ADD CONSTRAINT employees_pk PRIMARY KEY ( employee_id );
 
-ALTER TABLE employees ADD CONSTRAINT employees__un UNIQUE ( contract_id );
+ALTER TABLE employees ADD CONSTRAINT employees_contract_un UNIQUE ( contract_id );
 
 CREATE TABLE employees_contracts (
     contract_id INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
@@ -93,10 +94,10 @@ CREATE TABLE employees_contracts (
 );
 
 COMMENT ON COLUMN employees_contracts."wages " IS
-    'PL/SQL: musi zawieraæ siê pomiêdzy wide³kami p³acowymi okreœlonymi dla ka¿dego stanowiska w tabeli PayScales';
+    'PL/SQL: musi zawieraï¿½ siï¿½ pomiï¿½dzy wideï¿½kami pï¿½acowymi okreï¿½lonymi dla kaï¿½dego stanowiska w tabeli PayScales';
 
 COMMENT ON COLUMN employees_contracts."end_date " IS
-    'NULL - oznaczenie umowy na czas nieokreœlony';
+    'NULL - oznaczenie umowy na czas nieokreï¿½lony';
 
 ALTER TABLE employees_contracts ADD CONSTRAINT employeecontracts_pk PRIMARY KEY ( contract_id );
 
@@ -138,9 +139,9 @@ CREATE TABLE online_storehouse (
 );
 
 COMMENT ON COLUMN online_storehouse.online_product_qty IS
-    'pl/sql: kolumna modyfikowana w oparciu o kolumnê productInCartQuantity z tabeli Carts (zmniejszenie stanu iloœciowego produktu w zwi¹zku ze sprzeda¿¹) 
-Stan iloœciowy jest zmniejszany w momencie umieszczenia produktu w koszyku zakupowym (Carts).
-Podczas procesu biznesowego zapada decyzja o ile zwiêkszyæ stan iloœciowy produktu poniewa¿ iloœæ produktu na zamówieniu (tabela Orders kolumna onlineStoreQty)  nie musi siê zgadzaæ z iloœci¹ produktu dostarczonego.';
+    'pl/sql: kolumna modyfikowana w oparciu o kolumnï¿½ productInCartQuantity z tabeli Carts (zmniejszenie stanu iloï¿½ciowego produktu w zwiï¿½zku ze sprzedaï¿½ï¿½) 
+Stan iloï¿½ciowy jest zmniejszany w momencie umieszczenia produktu w koszyku zakupowym (Carts).
+Podczas procesu biznesowego zapada decyzja o ile zwiï¿½kszyï¿½ stan iloï¿½ciowy produktu poniewaï¿½ iloï¿½ï¿½ produktu na zamï¿½wieniu (tabela Orders kolumna onlineStoreQty)  nie musi siï¿½ zgadzaï¿½ z iloï¿½ciï¿½ produktu dostarczonego.';
 
 ALTER TABLE online_storehouse ADD CONSTRAINT stationarystorehousev1_pk PRIMARY KEY ( product_id );
 
@@ -260,9 +261,9 @@ CREATE TABLE stationary_storehouse (
 );
 
 COMMENT ON COLUMN stationary_storehouse.product_quantity IS
-    'pl/sql: kolumna modyfikowana w oparciu o kolumnê productInCartQuantity z tabeli Carts (zmniejszenie stanu iloœciowego produktu w zwi¹zku ze sprzeda¿¹) 
-Stan iloœciowy jest zmniejszany w momencie rozpoczêcia transakcji.
-Podczas procesu biznesowego zapada decyzja o ile zwiêkszyæ stan iloœciowy produktu poniewa¿ iloœæ produktu na zamówieniu (tabela Orders kolumna stationaryStoreQty)  nie musi siê zgadzaæ z iloœci¹ produktu dostarczonego.';
+    'pl/sql: kolumna modyfikowana w oparciu o kolumnï¿½ productInCartQuantity z tabeli Carts (zmniejszenie stanu iloï¿½ciowego produktu w zwiï¿½zku ze sprzedaï¿½ï¿½) 
+Stan iloï¿½ciowy jest zmniejszany w momencie rozpoczï¿½cia transakcji.
+Podczas procesu biznesowego zapada decyzja o ile zwiï¿½kszyï¿½ stan iloï¿½ciowy produktu poniewaï¿½ iloï¿½ï¿½ produktu na zamï¿½wieniu (tabela Orders kolumna stationaryStoreQty)  nie musi siï¿½ zgadzaï¿½ z iloï¿½ciï¿½ produktu dostarczonego.';
 
 ALTER TABLE stationary_storehouse ADD CONSTRAINT storehouse_pk PRIMARY KEY ( product_id );
 
@@ -279,7 +280,7 @@ COMMENT ON COLUMN supplied_products_lists.product_net_price IS
 cena netto na fakturze VAT';
 
 COMMENT ON COLUMN supplied_products_lists.tax IS
-    'podatek VAT wyrazony w liczbie dziesiêtnej';
+    'podatek VAT wyrazony w liczbie dziesiï¿½tnej';
 
 ALTER TABLE supplied_products_lists ADD CONSTRAINT suppliedproductlist_pk PRIMARY KEY ( supply_id,
                                                                                         product_id );
