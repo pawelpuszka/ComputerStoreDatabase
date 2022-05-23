@@ -337,17 +337,24 @@ ALTER TABLE transactions ADD CONSTRAINT transactions__un_invoice UNIQUE ( invoic
 
 ALTER TABLE transactions ADD CONSTRAINT transactions__un_receipt UNIQUE ( receipt_id );
 
+--DROP TABLE wholesale_clients;
 CREATE TABLE wholesale_clients (
-    wholesale_client_id   INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
+    wholesale_client_id   INTEGER NOT NULL,
     wholesale_client_name NVARCHAR2(100) NOT NULL,
-    address_id            INTEGER NOT NULL,
-    nip                   VARCHAR2(10 CHAR) NOT NULL
+    address_id            INTEGER,
+    nip                   VARCHAR2(10 CHAR),
+    regon                 VARCHAR2(9 BYTE)
 );
 
 COMMENT ON COLUMN wholesale_clients.wholesale_client_name IS
     'informacje o klientach hurtowych';
 
 ALTER TABLE wholesale_clients ADD CONSTRAINT clients_pk PRIMARY KEY ( wholesale_client_id );
+
+--ALTER TABLE wholesale_clients ADD regon VARCHAR2(9 BYTE);
+ALTER TABLE wholesale_clients ADD CONSTRAINT wholesale_clients_regon_un UNIQUE ( regon );
+
+ALTER TABLE wholesale_clients ADD CONSTRAINT wholesale_clients_nip_un UNIQUE ( nip );
 
 ALTER TABLE wholesale_clients
     ADD CONSTRAINT clients_adresses_fk FOREIGN KEY ( address_id )
