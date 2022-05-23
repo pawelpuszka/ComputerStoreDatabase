@@ -56,10 +56,22 @@ SELECT *
 FROM transformation_pracownicy
 ;
 
-
-
-
-
+--POLECENIE WSTAWIAJĄCE WYBRANE DANE Z TABELI TRANSFORMACYJNEJ DO TABELI EMPLOYEES
+INSERT INTO employees (
+     employee_name
+    ,employee_surname
+    ,pesel
+)
+SELECT
+     tp.employee_name
+    ,tp.employee_surname
+    ,tp.pesel
+FROM
+    transformation_pracownicy tp
+;
+select *
+from employees
+;
 
 
 
