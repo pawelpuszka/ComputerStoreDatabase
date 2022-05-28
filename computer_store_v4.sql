@@ -84,13 +84,14 @@ ALTER TABLE employees ADD CONSTRAINT employees_pk PRIMARY KEY ( employee_id );
 
 ALTER TABLE employees ADD CONSTRAINT employees_contract_un UNIQUE ( contract_id );
 
+DROP TABLE employees_contracts;
 CREATE TABLE employees_contracts (
     contract_id INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
-    "wages "    NUMBER(8, 2),
+    wages       NUMBER(8, 2),
     section_id  SMALLINT NOT NULL,
     position_id SMALLINT NOT NULL,
     hire_date   DATE NOT NULL,
-    "end_date " DATE
+    end_date    DATE
 );
 
 COMMENT ON COLUMN employees_contracts."wages " IS
@@ -339,7 +340,7 @@ ALTER TABLE transactions ADD CONSTRAINT transactions__un_receipt UNIQUE ( receip
 
 --DROP TABLE wholesale_clients;
 CREATE TABLE wholesale_clients (
-    wholesale_client_id   INTEGER NOT NULL,
+    wholesale_client_id   INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
     wholesale_client_name NVARCHAR2(100) NOT NULL,
     address_id            INTEGER,
     nip                   VARCHAR2(10 CHAR),
