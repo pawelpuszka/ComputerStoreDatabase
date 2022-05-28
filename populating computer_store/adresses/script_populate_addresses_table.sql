@@ -49,7 +49,6 @@ DECLARE
              phone_id
             ,phone_number
         FROM phone_nimbers
-        --FOR UPDATE
         ;
     
     v_phone_number phone_nimbers%ROWTYPE;
@@ -65,7 +64,34 @@ BEGIN
             ;
         COMMIT;
     END LOOP;
-    
     CLOSE phones;
 END;
 /
+
+
+--wholesale clients emails
+DROP TABLE emails;
+CREATE TABLE emails (
+     email_id   INTEGER GENERATED ALWAYS AS IDENTITY
+    ,email      VARCHAR2(100)
+);
+
+DECLARE
+    CURSOR email IS
+        SELECT *
+        FROM emails
+        --FOR UPDATE
+    ;
+    v_email emails%ROWTYPE;
+BEGIN
+    OPEN email;
+    LOOP
+        FETCH email INTO v_email;
+        EXIT WHEN email%NOTFOUND;
+        UPDATE buffer_addresses ba
+        SET ba.email = v_email.email
+        WHERE ba.addr_id = v_email.email_id;
+        COMMIT;
+    END LOOP;
+    CLOSE email;
+END;
