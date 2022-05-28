@@ -9,9 +9,10 @@
 
 -- predefined type, no DDL - XMLTYPE
 
+--ALTER TABLE addresses RENAME COLUMN "street " TO street
 CREATE TABLE addresses (
     address_id   INTEGER GENERATED ALWAYS AS IDENTITY,
-    "street "    NVARCHAR2(100),
+    street       NVARCHAR2(100),
     city         NVARCHAR2(50),
     postal_code  CHAR(5 CHAR),
     phone_number VARCHAR2(11 CHAR),
