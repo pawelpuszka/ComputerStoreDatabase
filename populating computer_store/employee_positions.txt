@@ -1,0 +1,7 @@
+sprzedawca
+kierownik
+manager
+magazynier
+księgowa
+zaopatrzeniowiec
+kadrowiec
