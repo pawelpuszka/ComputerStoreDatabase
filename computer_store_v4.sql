@@ -10,13 +10,18 @@
 -- predefined type, no DDL - XMLTYPE
 
 --ALTER TABLE addresses RENAME COLUMN "street " TO street
+--ALTER TABLE addresses DROP COLUMN email;
+--DROP TABLE addresses;
+--ALTER TABLE addresses MODIFY  postal_code  CHAR(6 CHAR);
+--ALTER TABLE addresses MODIFY  phone_number VARCHAR2(12 CHAR);
+
 CREATE TABLE addresses (
     address_id   INTEGER GENERATED ALWAYS AS IDENTITY,
     street       NVARCHAR2(100),
     city         NVARCHAR2(50),
-    postal_code  CHAR(5 CHAR),
+    postal_code  CHAR(6 CHAR),
     phone_number VARCHAR2(11 CHAR),
-    email        VARCHAR2(50 CHAR)
+   
 );
 
 COMMENT ON COLUMN addresses.city IS
@@ -68,6 +73,7 @@ CREATE TABLE employees (
     employee_name    NVARCHAR2(20) NOT NULL,
     employee_surname NVARCHAR2(30) NOT NULL,
     pesel            VARCHAR2(11),
+    email           VARCHAR2(50 CHAR),
     address_id          INTEGER,
     contract_id         SMALLINT
 );
