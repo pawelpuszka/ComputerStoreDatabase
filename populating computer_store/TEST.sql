@@ -20,11 +20,13 @@ FROM
         ON s.section_id = ec.section_id
 ;
 
-update employees
-set employee_surname = 'Nowakowski'
-where employee_id = 1;
+update product_categories
+set CATEGORY_NAME = 'karty muzyczne'
+where category_id = 3;
 
 
-
-
+ALTER TABLE employees_contracts drop constraint employee_contracts_check;
+ALTER TABLE employees_contracts ADD CONSTRAINT emp_contracts_dates_check CHECK(hire_date + 183 < end_date);
+insert into employees_contracts (wages, section_id, position_id, hire_date, end_date)
+values(4500, 7, 13, sysdate, to_date('2022-05-15'));
     

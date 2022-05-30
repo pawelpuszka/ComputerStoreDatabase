@@ -122,7 +122,7 @@ COMMENT ON COLUMN income_invoices.net_amount IS
 
 ALTER TABLE income_invoices ADD CONSTRAINT invoices_pk PRIMARY KEY ( income_invoice_id );
 
-ALTER TABLE income_invoices ADD CONSTRAINT incomeinvoices__un UNIQUE ( income_invoice_nr );
+ALTER TABLE income_invoices ADD CONSTRAINT incomeinvoices_nr_un UNIQUE ( income_invoice_nr );
 
 CREATE TABLE invoice_products_lists (
     invoice_list_id       INTEGER GENERATED ALWAYS AS IDENTITY
@@ -208,16 +208,12 @@ CREATE TABLE PRODUCTS
     (
     product_id    INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
     category_id   SMALLINT,
-    product_name  NVARCHAR2(100) NOT NULL,
-    serial_number NVARCHAR2(50) DEFAULT ON NULL NULL,
-    unit_price    NUMBER(8, 2) DEFAULT ON NULL 0,0 
+    product_name  VARCHAR2(200) NOT NULL,
+    unit_price    NUMBER(8, 2) DEFAULT ON NULL 0 
     ) 
 ;
 COMMENT ON COLUMN products.product_name IS
     'nazwa produktu	';
-
-COMMENT ON COLUMN products.serial_number IS
-    'numer seryjny/identyfikacyjny produktu';
 
 COMMENT ON COLUMN products.unit_price IS
     'cena netto produktu (cena w sklepie)';
@@ -476,7 +472,7 @@ ALTER TABLE transactions
     ADD CONSTRAINT transactions_transtatus_fk FOREIGN KEY ( status_id )
         REFERENCES transaction_statuses ( status_id );
 
-CREATE SEQUENCE PRODUCTS_product_ID_SEQ 
+/*CREATE SEQUENCE PRODUCTS_product_ID_SEQ 
 START WITH 1 
     NOCACHE 
     ORDER ;
@@ -490,7 +486,7 @@ BEGIN
 
 end;
 /
-
+*/
 
 
 -- Oracle SQL Developer Data Modeler Summary Report: 
