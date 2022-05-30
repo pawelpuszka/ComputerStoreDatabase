@@ -20,8 +20,7 @@ CREATE TABLE addresses (
     street       NVARCHAR2(100),
     city         NVARCHAR2(50),
     postal_code  CHAR(6 CHAR),
-    phone_number VARCHAR2(11 CHAR),
-   
+    phone_number VARCHAR2(11 CHAR)
 );
 
 COMMENT ON COLUMN addresses.city IS
@@ -99,10 +98,10 @@ CREATE TABLE employees_contracts (
     end_date    DATE
 );
 
-COMMENT ON COLUMN employees_contracts."wages " IS
+COMMENT ON COLUMN employees_contracts.wages IS
     'PL/SQL: musi zawiera� si� pomi�dzy wide�kami p�acowymi okre�lonymi dla ka�dego stanowiska w tabeli PayScales';
 
-COMMENT ON COLUMN employees_contracts."end_date " IS
+COMMENT ON COLUMN employees_contracts.end_date IS
     'NULL - oznaczenie umowy na czas nieokre�lony';
 
 ALTER TABLE employees_contracts ADD CONSTRAINT employeecontracts_pk PRIMARY KEY ( contract_id );
@@ -178,8 +177,9 @@ ALTER TABLE orders ADD CONSTRAINT orders_pk PRIMARY KEY ( order_id );
 
 ALTER TABLE orders ADD CONSTRAINT orders__un UNIQUE ( order_nr );
 
+--DROP TABLE pay_scales;
 CREATE TABLE pay_scales (
-    position_id SMALLINT GENERATED ALWAYS AS IDENTITY NOT NULL,
+    position_id SMALLINT GENERATED ALWAYS AS IDENTITY,
     min_wages   NUMBER(8, 2) NOT NULL,
     max_wages   NUMBER(8, 2) NOT NULL
 );
@@ -251,6 +251,7 @@ ALTER TABLE receipts ADD CONSTRAINT receipts_pk PRIMARY KEY ( receipt_id );
 
 ALTER TABLE receipts ADD CONSTRAINT receipts__un UNIQUE ( "receipt_no " );
 
+--DROP TABLE sections;
 CREATE TABLE sections (
     section_id   SMALLINT GENERATED ALWAYS AS IDENTITY NOT NULL,
     section_name VARCHAR2(100 CHAR) NOT NULL
@@ -258,7 +259,7 @@ CREATE TABLE sections (
 
 ALTER TABLE sections ADD CONSTRAINT sections_pk PRIMARY KEY ( section_id );
 
-ALTER TABLE sections ADD CONSTRAINT sections__un UNIQUE ( section_name );
+ALTER TABLE sections ADD CONSTRAINT sections_name_un UNIQUE ( section_name );
 
 CREATE TABLE stationary_storehouse (
     product_id       INTEGER NOT NULL,
