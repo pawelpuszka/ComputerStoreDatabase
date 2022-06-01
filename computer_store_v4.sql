@@ -108,6 +108,8 @@ ALTER TABLE employees_contracts ADD CONSTRAINT employeecontracts_pk PRIMARY KEY 
 
 ALTER TABLE employees_contracts ADD CONSTRAINT employees_contracts__un UNIQUE ( position_id );
 
+ALTER TABLE employees_contracts ADD CONSTRAINT emp_contracts_dates_check CHECK(hire_date + 183 < end_date);
+
 CREATE TABLE income_invoices (
     income_invoice_id   INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
     income_invoice_nr   NVARCHAR2(20) NOT NULL,
