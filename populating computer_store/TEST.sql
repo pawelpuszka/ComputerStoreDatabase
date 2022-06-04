@@ -29,4 +29,15 @@ ALTER TABLE employees_contracts drop constraint employee_contracts_check;
 ALTER TABLE employees_contracts ADD CONSTRAINT emp_contracts_dates_check CHECK(hire_date + 183 < end_date);
 insert into employees_contracts (wages, section_id, position_id, hire_date, end_date)
 values(4500, 7, 13, sysdate, to_date('2022-05-15'));
-    
+
+create table products_copy
+AS
+(select * from products)
+;
+
+select p.product_id, pr.product_id
+from products p
+inner join products pr
+on
+ p.product_name = pr.product_name
+ and p.product_id != pr.product_id;

@@ -322,16 +322,15 @@ ALTER TABLE transaction_statuses ADD CONSTRAINT transactionstatus_pk PRIMARY KEY
 
 ALTER TABLE transaction_statuses ADD CONSTRAINT transactionstatus__un UNIQUE ( status_name );
 
+--DROP TABLE transactions;
 CREATE TABLE transactions (
     transaction_id     INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
     invoice_id         INTEGER,
     receipt_id         INTEGER,
-    product_id         INTEGER,
     employee_id        SMALLINT,
-    payment_method_id  SMALLINT DEFAULT card NOT NULL,
+    payment_method_id  SMALLINT DEFAULT 1 NOT NULL,
     delivery_method_id SMALLINT NOT NULL,
     status_id          SMALLINT NOT NULL,
-    is_paid            NUMBER,
     start_time         TIMESTAMP,
     end_time           TIMESTAMP
 );
@@ -427,7 +426,7 @@ ALTER TABLE receipt_products_lists
 
 --  ERROR: FK name length exceeds maximum allowed length(30) 
 ALTER TABLE receipt_products_lists
-    ADD CONSTRAINT receipt_products_lists_receipts_fk FOREIGN KEY ( receipt_id )
+    ADD CONSTRAINT receipt_prod_lists_receipts_fk FOREIGN KEY ( receipt_id )
         REFERENCES receipts ( receipt_id );
 
 ALTER TABLE stationary_storehouse
@@ -453,7 +452,7 @@ ALTER TABLE supplies
 ALTER TABLE transactions
     ADD CONSTRAINT trans_delivery_meth_fk FOREIGN KEY ( delivery_method_id )
         REFERENCES delivery_methods ( delivery_method_id );
-
+--ERROR
 ALTER TABLE transactions
     ADD CONSTRAINT transactions_employees_fk FOREIGN KEY ( employee_id )
         REFERENCES employees ( employee_id );
