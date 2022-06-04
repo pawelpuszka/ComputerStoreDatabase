@@ -98,10 +98,48 @@ END generate_stationary_product_qty;
 /
 
 BEGIN
-    --copy_product_ids();
+    copy_product_ids();
     generate_stationary_product_qty();
+    check_products_number_in_tables();
 END;
 /
 
 SELECT * 
 FROM stationary_storehouse;
+
+--checking if there is the same number of products in storehouses and products table
+DROP PROCEDURE check_products_number_in_tables;
+CREATE OR REPLACE
+PROCEDURE check_products_number_in_tables
+IS  
+    v_stationary_prod_num   INTEGER;
+    v_online_prod_num       INTEGER;
+    v_prod_num              INTEGER;
+BEGIN
+    SELECT COUNT(*)
+    INTO v_prod_num
+    FROM products
+    ;
+    SELECT COUNT(*)
+    INTO v_stationary_prod_num
+    FROM stationary_storehouse
+    ;
+    SELECT COUNT(*)
+    INTO v_online_prod_num
+    FROM online_storehouse
+    ;
+    
+    IF v_prod_num != v_stationary_prod_num THEN
+        dbms_output.put_line('Niezgodność w magazynie stacjonarnym');
+        RETURN;        
+    END IF;
+    IF v_prod_num != v_online_prod_num THEN
+        dbms_output.put_line('Niezgodność w magazynie online');
+        RETURN;
+    END IF;
+    IF v_online_prod_num != v_stationary_prod_num THEN
+        dbms_output.put_line('Magazyn online i stacjonarny mają inną liczbę produktów.');
+        RETURN;
+    END IF;
+    dbms_output.put_line('Jest ok.');
+END check_products_number_in_tables;
