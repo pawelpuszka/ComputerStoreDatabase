@@ -1,0 +1,9 @@
+SET SERVEROUTPUT ON;
+
+DROP TABLE client_addresses;
+CREATE TABLE client_addresses (
+     STREET         NVARCHAR2(100)
+    ,CITY           NVARCHAR2(50)
+    ,POSTAL_CODE    CHAR(6 CHAR)
+    ,PHONE_NUMBER   VARCHAR2(12 CHAR)
+);
