@@ -1,3 +1,24 @@
+SELECT COUNT(a.address_id), e.employee_id
+FROM 
+    addresses a
+    LEFT JOIN employees e
+        ON a.address_id = e.address_id
+WHERE
+    e.employee_id IS NULL
+GROUP BY e.employee_id
+;
+
+SELECT a.address_id, a.street, e.employee_id
+FROM 
+    addresses a
+    LEFT JOIN employees e
+        ON a.address_id = e.address_id
+WHERE
+    e.employee_id IS NULL
+ORDER BY a.address_id
+;
+
+
 select *
 from sections;
 
