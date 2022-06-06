@@ -236,6 +236,8 @@ ALTER TABLE receipt_products_lists ADD CONSTRAINT purchasedproductslist_pk PRIMA
 
 ALTER TABLE receipt_products_lists ADD CONSTRAINT receipt_products_lists__un UNIQUE ( receipt_id );
 
+ALTER TABLE receipt_products_lists ADD CONSTRAINT receipt_purchased_qty_check CHECK (purchased_product_qty > 0);
+
 CREATE TABLE receipts (
     receipt_id    INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
     "receipt_no " NVARCHAR2(20) NOT NULL,
