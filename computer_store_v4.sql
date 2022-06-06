@@ -222,6 +222,8 @@ COMMENT ON COLUMN products.unit_price IS
 
 ALTER TABLE products ADD CONSTRAINT products_pk PRIMARY KEY ( product_id );
 
+ALTER TABLE products ADD CONSTRAINT products_unit_price_check CHECK (unit_price >= 0);
+
 CREATE TABLE receipt_products_lists (
     receipt_list_id       INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
     receipt_id            INTEGER NOT NULL,
@@ -347,7 +349,8 @@ CREATE TABLE wholesale_clients (
     wholesale_client_name NVARCHAR2(100) NOT NULL,
     address_id            INTEGER,
     nip                   VARCHAR2(10 CHAR),
-    regon                 VARCHAR2(9 BYTE)
+    regon                 VARCHAR2(9 BYTE),
+    email                 VARCHAR2(50 CHAR)
 );
 
 COMMENT ON COLUMN wholesale_clients.wholesale_client_name IS
@@ -355,6 +358,7 @@ COMMENT ON COLUMN wholesale_clients.wholesale_client_name IS
 
 ALTER TABLE wholesale_clients ADD CONSTRAINT clients_pk PRIMARY KEY ( wholesale_client_id );
 
+--ALTER TABLE wholesale_clients ADD email VARCHAR2(50 CHAR);
 --ALTER TABLE wholesale_clients ADD regon VARCHAR2(9 BYTE);
 ALTER TABLE wholesale_clients ADD CONSTRAINT wholesale_clients_regon_un UNIQUE ( regon );
 
