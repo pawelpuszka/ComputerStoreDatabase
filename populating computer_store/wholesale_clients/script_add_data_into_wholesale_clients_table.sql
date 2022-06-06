@@ -1,5 +1,6 @@
 SET SERVEROUTPUT ON;
 
+DROP TABLE wholesale_clients_copy;
 CREATE TABLE wholesale_clients_copy
 AS
 (SELECT * FROM wholesale_clients);
@@ -42,9 +43,38 @@ BEGIN
 END;
 /
 
-    SELECT count(a.address_id)
-    FROM addresses a
-        LEFT JOIN employees e
-            ON a.address_id = e.address_id
-    WHERE e.employee_id IS NULL
-    ;
+--checking for multiple occurrences of ids
+SELECT count(wholesale_client_id)
+FROM wholesale_clients_copy
+GROUP BY address_id
+;
+
+--copying wholesale_clients_copy to wholesale_clients table
+SELECT *
+FROM wholesale_clients
+;
+
+INSERT INTO wholesale_clients(
+     wholesale_client_name
+    ,address_id
+    ,nip
+    ,regon
+    ,email
+)
+SELECT
+     w.wholesale_client_name
+    ,w.address_id
+    ,w.nip
+    ,w.regon
+    ,w.email
+FROM 
+    wholesale_clients_copy w
+;
+
+
+
+
+
+
+
+
