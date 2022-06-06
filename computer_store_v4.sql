@@ -68,11 +68,11 @@ ALTER TABLE employee_positions ADD CONSTRAINT employeepositions__un UNIQUE ( pos
 
 --DROP TABLE employees;
 CREATE TABLE employees (
-    employee_id         INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
-    employee_name    NVARCHAR2(20) NOT NULL,
-    employee_surname NVARCHAR2(30) NOT NULL,
-    pesel            VARCHAR2(11),
-    email           VARCHAR2(50 CHAR),
+    employee_id         INTEGER GENERATED ALWAYS AS IDENTITY,
+    employee_name       NVARCHAR2(20) NOT NULL,
+    employee_surname    NVARCHAR2(30) NOT NULL,
+    pesel               VARCHAR2(11),
+    email               VARCHAR2(50 CHAR),
     address_id          INTEGER,
     contract_id         SMALLINT
 );
@@ -236,7 +236,7 @@ ALTER TABLE receipt_products_lists ADD CONSTRAINT receipt_products_lists__un UNI
 
 ALTER TABLE receipt_products_lists ADD CONSTRAINT receipt_purchased_qty_check CHECK (purchased_product_qty > 0);
 
-ALTER TABLE receipts ADD  transaction_id  INTEGER;
+--ALTER TABLE receipts ADD  transaction_id  INTEGER;
 CREATE TABLE receipts (
     receipt_id      INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
     receipt_no      NVARCHAR2(20) NOT NULL,
@@ -328,11 +328,13 @@ ALTER TABLE transaction_statuses ADD CONSTRAINT transactionstatus_pk PRIMARY KEY
 
 ALTER TABLE transaction_statuses ADD CONSTRAINT transactionstatus__un UNIQUE ( status_name );
 
+--ALTER TABLE transactions DROP CONSTRAINT TRANSACTIONS_RECEIPTS_FK;
+--ALTER TABLE transactions DROP CONSTRAINT TRANS_IN_INVOICES_FK;
+--ALTER TABLE transactions DROP CONSTRAINT TRANSACTIONS__UN_INVOICE;
+--ALTER TABLE transactions DROP CONSTRAINT TRANSACTIONS__UN_RECEIPT;
 --DROP TABLE transactions;
 CREATE TABLE transactions (
     transaction_id     INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
-    invoice_id         INTEGER,
-    receipt_id         INTEGER,
     employee_id        SMALLINT,
     payment_method_id  SMALLINT DEFAULT 1 NOT NULL,
     delivery_method_id SMALLINT NOT NULL,
@@ -474,8 +476,6 @@ ALTER TABLE transactions
 ALTER TABLE transactions
     ADD CONSTRAINT transactions_paymentmethods_fk FOREIGN KEY ( payment_method_id )
         REFERENCES payment_methods ( payment_method_id );
---
-
 
 ALTER TABLE transactions
     ADD CONSTRAINT transactions_transtatus_fk FOREIGN KEY ( status_id )
