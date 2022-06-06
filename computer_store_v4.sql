@@ -110,9 +110,11 @@ ALTER TABLE employees_contracts ADD CONSTRAINT employees_contracts__un UNIQUE ( 
 
 ALTER TABLE employees_contracts ADD CONSTRAINT emp_contracts_dates_check CHECK(hire_date + 183 < end_date);
 
+--ALTER TABLE income_invoices ADD  transaction_id  INTEGER;
 CREATE TABLE income_invoices (
     income_invoice_id   INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
     income_invoice_nr   NVARCHAR2(20) NOT NULL,
+    transaction_id      INTEGER,
     wholesale_client_id INTEGER NOT NULL,
     income_invoice_date TIMESTAMP
 );
@@ -123,6 +125,11 @@ COMMENT ON COLUMN income_invoices.net_amount IS
 ALTER TABLE income_invoices ADD CONSTRAINT invoices_pk PRIMARY KEY ( income_invoice_id );
 
 ALTER TABLE income_invoices ADD CONSTRAINT incomeinvoices_nr_un UNIQUE ( income_invoice_nr );
+
+ALTER TABLE income_invoices
+    ADD CONSTRAINT invoices_transactions_fk FOREIGN KEY ( transaction_id )
+        REFERENCES transactions ( transaction_id );
+
 
 CREATE TABLE invoice_products_lists (
     invoice_list_id       INTEGER GENERATED ALWAYS AS IDENTITY
@@ -468,10 +475,7 @@ ALTER TABLE transactions
 ALTER TABLE transactions
     ADD CONSTRAINT transactions_employees_fk FOREIGN KEY ( employee_id )
         REFERENCES employees ( employee_id );
---
-ALTER TABLE transactions
-    ADD CONSTRAINT trans_in_invoices_fk FOREIGN KEY ( invoice_id )
-        REFERENCES income_invoices ( income_invoice_id );
+
 
 ALTER TABLE transactions
     ADD CONSTRAINT transactions_paymentmethods_fk FOREIGN KEY ( payment_method_id )
