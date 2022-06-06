@@ -236,10 +236,12 @@ ALTER TABLE receipt_products_lists ADD CONSTRAINT receipt_products_lists__un UNI
 
 ALTER TABLE receipt_products_lists ADD CONSTRAINT receipt_purchased_qty_check CHECK (purchased_product_qty > 0);
 
+ALTER TABLE receipts ADD  transaction_id  INTEGER;
 CREATE TABLE receipts (
-    receipt_id    INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
-    "receipt_no " NVARCHAR2(20) NOT NULL,
-    receipt_date  TIMESTAMP
+    receipt_id      INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
+    receipt_no      NVARCHAR2(20) NOT NULL,
+    transaction_id  INTEGER,
+    receipt_date    TIMESTAMP
 );
 
 COMMENT ON COLUMN receipts.net_amount IS
@@ -247,7 +249,11 @@ COMMENT ON COLUMN receipts.net_amount IS
 
 ALTER TABLE receipts ADD CONSTRAINT receipts_pk PRIMARY KEY ( receipt_id );
 
-ALTER TABLE receipts ADD CONSTRAINT receipts__un UNIQUE ( "receipt_no " );
+ALTER TABLE receipts ADD CONSTRAINT receipts__un UNIQUE ( receipt_no );
+
+ALTER TABLE receipts
+    ADD CONSTRAINT receipts_transactions_fk FOREIGN KEY ( transaction_id )
+        REFERENCES TRANSACTIONS ( transaction_id );
 
 --DROP TABLE sections;
 CREATE TABLE sections (
@@ -421,6 +427,8 @@ ALTER TABLE pay_scales
 ALTER TABLE products
     ADD CONSTRAINT products_productcategories_fk FOREIGN KEY ( category_id )
         REFERENCES product_categories ( category_id );
+        
+
 
 ALTER TABLE receipt_products_lists
     ADD CONSTRAINT purchasedlist_products_fk FOREIGN KEY ( product_id )
@@ -454,11 +462,11 @@ ALTER TABLE supplies
 ALTER TABLE transactions
     ADD CONSTRAINT trans_delivery_meth_fk FOREIGN KEY ( delivery_method_id )
         REFERENCES delivery_methods ( delivery_method_id );
---ERROR
+
 ALTER TABLE transactions
     ADD CONSTRAINT transactions_employees_fk FOREIGN KEY ( employee_id )
         REFERENCES employees ( employee_id );
-
+--
 ALTER TABLE transactions
     ADD CONSTRAINT trans_in_invoices_fk FOREIGN KEY ( invoice_id )
         REFERENCES income_invoices ( income_invoice_id );
@@ -466,10 +474,8 @@ ALTER TABLE transactions
 ALTER TABLE transactions
     ADD CONSTRAINT transactions_paymentmethods_fk FOREIGN KEY ( payment_method_id )
         REFERENCES payment_methods ( payment_method_id );
+--
 
-ALTER TABLE transactions
-    ADD CONSTRAINT transactions_receipts_fk FOREIGN KEY ( receipt_id )
-        REFERENCES receipts ( receipt_id );
 
 ALTER TABLE transactions
     ADD CONSTRAINT transactions_transtatus_fk FOREIGN KEY ( status_id )
