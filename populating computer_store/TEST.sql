@@ -8,7 +8,7 @@ WHERE
 GROUP BY e.employee_id
 ;
 
-SELECT a.address_id, a.street, e.employee_id
+SELECT a.address_id, a.street, a.city, a.phone_number, e.employee_id
 FROM 
     addresses a
     LEFT JOIN employees e

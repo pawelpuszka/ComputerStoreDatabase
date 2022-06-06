@@ -114,8 +114,6 @@ CREATE TABLE income_invoices (
     income_invoice_id   INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
     income_invoice_nr   NVARCHAR2(20) NOT NULL,
     wholesale_client_id INTEGER NOT NULL,
-    net_amount          NUMBER(10, 2) NOT NULL,
-    tax_amount          NUMBER(10, 2) NOT NULL,
     income_invoice_date TIMESTAMP
 );
 
@@ -241,8 +239,6 @@ ALTER TABLE receipt_products_lists ADD CONSTRAINT receipt_purchased_qty_check CH
 CREATE TABLE receipts (
     receipt_id    INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
     "receipt_no " NVARCHAR2(20) NOT NULL,
-    net_amount    NUMBER(10, 2) NOT NULL,
-    tax_amount    NUMBER(10, 2) NOT NULL,
     receipt_date  TIMESTAMP
 );
 
