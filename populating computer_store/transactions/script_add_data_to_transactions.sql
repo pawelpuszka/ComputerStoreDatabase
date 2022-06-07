@@ -82,6 +82,30 @@ IS
         END IF;
     END set_employee_id;
     
+    PROCEDURE set_status_id(in_id INTEGER)
+    IS
+        v_status_id transactions.status_id%TYPE;
+        v_random_id INTEGER := 0;
+    BEGIN
+        IF at_transactions(in_id).delivery_method_id = 4 THEN -- 4-stationary sale
+            at_transactions(in_id).status_id := 5;            -- 5-FINISHED
+        ELSE
+            IF at_transactions(in_id).payment_method_id IN (1, 3) THEN --if paid with card(1) or blik(3)
+                LOOP
+                    v_random_id := DBMS_RANDOM.value(3, 5);
+                    at_transactions(in_id).status_id := v_random_id;
+                    EXIT WHEN v_random_id IN (3, 5);
+                END LOOP;
+            ELSIF at_transactions(in_id).payment_method_id = 4 THEN -- 4-BANK TRANSFER
+                LOOP
+                    v_random_id := DBMS_RANDOM.value(1, 5);
+                    at_transactions(in_id).status_id := v_random_id;
+                    EXIT WHEN v_random_id IN (1, 2, 3, 5);
+                END LOOP;
+            END IF;
+        END IF;
+    END set_status_id;
+    
 BEGIN
     FOR next_id IN 1..200
     LOOP
@@ -89,7 +113,12 @@ BEGIN
         set_delivery_id(next_id);
         set_payment_id(next_id);
         set_employee_id(next_id);
-        dbms_output.put_line('transaction_id: ' || at_transactions(next_id).transaction_id || ', payment_id ' || at_transactions(next_id).payment_method_id || ', delivery_id: ' || at_transactions(next_id).delivery_method_id || ', employee_id: ' || at_transactions(next_id).employee_id);
+        set_status_id(next_id);
+        dbms_output.put_line('transaction_id: ' || at_transactions(next_id).transaction_id || 
+                             ', payment_id ' || at_transactions(next_id).payment_method_id || 
+                             ', delivery_id: ' || at_transactions(next_id).delivery_method_id || 
+                             ', employee_id: ' || at_transactions(next_id).employee_id ||
+                             ', STATUS_ID: ' || at_transactions(next_id).status_id);
     END LOOP;
 END generate_transaction_data;
 /
