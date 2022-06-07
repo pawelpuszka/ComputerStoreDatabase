@@ -50,9 +50,10 @@ ALTER TABLE cost_invoices ADD CONSTRAINT costinvoices_pk PRIMARY KEY ( cost_invo
 
 ALTER TABLE cost_invoices ADD CONSTRAINT costinvoices__un UNIQUE ( cost_invoice_nr );
 
+--ALTER TABLE delivery_methods MODIFY delivery_method_name VARCHAR2(50);
 CREATE TABLE delivery_methods (
     delivery_method_id   SMALLINT GENERATED ALWAYS AS IDENTITY NOT NULL,
-    delivery_method_name SMALLINT
+    delivery_method_name VARCHAR2(50)
 );
 
 ALTER TABLE delivery_methods ADD CONSTRAINT sales_pk PRIMARY KEY ( delivery_method_id );
@@ -118,9 +119,6 @@ CREATE TABLE income_invoices (
     wholesale_client_id INTEGER NOT NULL,
     income_invoice_date TIMESTAMP
 );
-
-COMMENT ON COLUMN income_invoices.net_amount IS
-    'kwota netto transakcji';
 
 ALTER TABLE income_invoices ADD CONSTRAINT invoices_pk PRIMARY KEY ( income_invoice_id );
 
@@ -243,6 +241,7 @@ ALTER TABLE receipt_products_lists ADD CONSTRAINT receipt_products_lists__un UNI
 
 ALTER TABLE receipt_products_lists ADD CONSTRAINT receipt_purchased_qty_check CHECK (purchased_product_qty > 0);
 
+--ALTER TABLE receipts RENAME COLUMN "receipt_no " TO receipt_no
 --ALTER TABLE receipts ADD  transaction_id  INTEGER;
 CREATE TABLE receipts (
     receipt_id      INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
@@ -436,8 +435,6 @@ ALTER TABLE pay_scales
 ALTER TABLE products
     ADD CONSTRAINT products_productcategories_fk FOREIGN KEY ( category_id )
         REFERENCES product_categories ( category_id );
-        
-
 
 ALTER TABLE receipt_products_lists
     ADD CONSTRAINT purchasedlist_products_fk FOREIGN KEY ( product_id )
