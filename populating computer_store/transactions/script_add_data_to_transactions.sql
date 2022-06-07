@@ -74,10 +74,10 @@ IS
         END IF;
         
         IF stationary_sale(in_id) THEN
-            v_random_id := DBMS_RANDOM.value(1, 8);
+            v_random_id := DBMS_RANDOM.value(at_stationary_salesmen_id.FIRST, at_stationary_salesmen_id.LAST);
             at_transactions(in_id).employee_id := at_stationary_salesmen_id(v_random_id);
         ELSE
-            v_random_id := DBMS_RANDOM.value(1, 5);
+            v_random_id := DBMS_RANDOM.value(at_online_salesmen_id.FIRST, at_online_salesmen_id.LAST);
             at_transactions(in_id).employee_id := at_online_salesmen_id(v_random_id);
         END IF;
     END set_employee_id;
@@ -89,7 +89,7 @@ BEGIN
         set_delivery_id(next_id);
         set_payment_id(next_id);
         set_employee_id(next_id);
-        --dbms_output.put_line('transaction_id: ' || at_transactions(next_id).transaction_id || ', payment_id ' || at_transactions(next_id).payment_method_id || ', delivery_id: ' || at_transactions(next_id).delivery_method_id || ', employee_id: ' || at_transactions(next_id).employee_id);
+        dbms_output.put_line('transaction_id: ' || at_transactions(next_id).transaction_id || ', payment_id ' || at_transactions(next_id).payment_method_id || ', delivery_id: ' || at_transactions(next_id).delivery_method_id || ', employee_id: ' || at_transactions(next_id).employee_id);
     END LOOP;
 END generate_transaction_data;
 /
