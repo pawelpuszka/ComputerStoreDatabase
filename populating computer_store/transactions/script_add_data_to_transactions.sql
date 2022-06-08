@@ -106,6 +106,73 @@ IS
         END IF;
     END set_status_id;
     
+    
+    PROCEDURE generate_dates(in_id INTEGER)
+    IS
+        v_start_date    TIMESTAMP;
+        v_end_date      TIMESTAMP;
+        v_rand_num_days INTEGER;
+        
+        FUNCTION is_stationary_sale(in_id INTEGER) RETURN BOOLEAN IS
+        BEGIN
+            RETURN at_transactions(in_id).delivery_method_id = 4;
+        END is_stationary_sale;
+        
+        FUNCTION get_hire_date(in_id INTEGER) RETURN employees_contracts.hire_date%TYPE 
+        IS
+            v_hire_date DATE;
+        BEGIN
+            SELECT ec.hire_date
+            INTO v_hire_date
+            FROM employees_contracts ec
+                INNER JOIN employees e
+                    ON ec.contract_id = e.contract_id
+            WHERE e.employee_id = at_transactions(in_id).employee_id
+            ;
+            RETURN v_hire_date;
+        END get_hire_date;
+        
+        PROCEDURE set_sale_start_date(in_id INTEGER)IS
+        BEGIN
+            LOOP
+                v_rand_num_days := DBMS_RANDOM.value(10, 2500);
+                v_start_date := CAST((get_hire_date(in_id) + v_rand_num_days) AS TIMESTAMP);
+                EXIT WHEN v_start_date < CAST(TO_DATE(SYSDATE - 1, 'YYYY/MM/DD') AS TIMESTAMP);
+            END LOOP;
+            at_transactions(in_id).start_time := v_start_date;
+        END set_sale_start_date;
+        
+        PROCEDURE set_stationary_sale_end_date(in_id INTEGER) IS
+        BEGIN
+            v_end_date := v_start_date + DBMS_RANDOM.value(((1/24) * (1/60)),((1/24) * (1/6))); -- PERIOD OF TIME 1 minute - 10 minutes 
+            at_transactions(in_id).end_time := v_end_date;
+        END set_stationary_sale_end_date;
+        
+        PROCEDURE set_online_sale_end_date(in_id INTEGER) 
+        IS
+            PROCEDURE set_new_status_start_date(in_id INTEGER) IS
+            BEGIN
+                at_transactions(in_id).start_time := SYSTIMESTAMP - INTERVAL '1' DAY;
+            END set_new_status_start_date;
+            
+        BEGIN
+            IF at_transactions(in_id)
+        END;
+        
+    BEGIN
+        IF is_stationary_sale(in_id) THEN
+            set_sale_start_date(in_id);
+            set_stationary_sale_end_date(in_id);
+        ELSE
+            set_new_status_start_date(in_id);
+            set_pending_status_start_date(in_id);
+            set_canceled_status_start_date(in_id);
+            set_finished_status_start_date(in_id);
+            set_new_status_end_date(in_id);
+        END IF;
+        --dbms_output.put_line(get_hire_date(in_id) || ', ' || TO_CHAR(at_transactions(in_id).start_time, 'YYYY/MM/DD HH24:MI:SS') || ', ' || TO_CHAR(at_transactions(in_id).end_time, 'YYYY/MM/DD HH24:MI:SS'));
+    END generate_dates;
+    
 BEGIN
     FOR next_id IN 1..200
     LOOP
@@ -114,11 +181,14 @@ BEGIN
         set_payment_id(next_id);
         set_employee_id(next_id);
         set_status_id(next_id);
+        generate_dates(next_id);
         dbms_output.put_line('transaction_id: ' || at_transactions(next_id).transaction_id || 
                              ', payment_id ' || at_transactions(next_id).payment_method_id || 
                              ', delivery_id: ' || at_transactions(next_id).delivery_method_id || 
                              ', employee_id: ' || at_transactions(next_id).employee_id ||
-                             ', STATUS_ID: ' || at_transactions(next_id).status_id);
+                             ', STATUS_ID: ' || at_transactions(next_id).status_id ||
+                             ', start_date ' || at_transactions(next_id).start_time ||
+                             ', end_date ' || at_transactions(next_id).end_time);
     END LOOP;
 END generate_transaction_data;
 /
