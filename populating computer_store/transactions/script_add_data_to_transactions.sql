@@ -232,6 +232,27 @@ IS
         --dbms_output.put_line(get_hire_date(in_id) || ', ' || TO_CHAR(at_transactions(in_id).start_time, 'YYYY/MM/DD HH24:MI:SS') || ', ' || TO_CHAR(at_transactions(in_id).end_time, 'YYYY/MM/DD HH24:MI:SS'));
     END generate_dates;
     
+    PROCEDURE copy_data_into_transactions_tab IS
+    BEGIN
+        FORALL trnscts IN at_transactions.FIRST..at_transactions.LAST
+            INSERT INTO transactions(
+                 employee_id
+                ,payment_method_id
+                ,delivery_method_id
+                ,status_id
+                ,start_time
+                ,end_time
+            )
+            VALUES(
+                 at_transactions(trnscts).employee_id
+                ,at_transactions(trnscts).payment_method_id
+                ,at_transactions(trnscts).delivery_method_id
+                ,at_transactions(trnscts).status_id
+                ,at_transactions(trnscts).start_time
+                ,at_transactions(trnscts).end_time
+            );
+    END copy_data_into_transactions_tab;
+    
 BEGIN
     FOR next_id IN 1..2000
     LOOP
@@ -249,9 +270,15 @@ BEGIN
                              ', start_date ' || at_transactions(next_id).start_time ||
                              ', end_date ' || at_transactions(next_id).end_time);
     END LOOP;
+    copy_data_into_transactions_tab();
 END generate_transaction_data;
 /
 
 BEGIN
     generate_transaction_data();
 END;
+/
+
+SELECT *
+FROM transactions
+where rownum < 100;
