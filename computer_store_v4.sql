@@ -111,13 +111,16 @@ ALTER TABLE employees_contracts ADD CONSTRAINT employees_contracts__un UNIQUE ( 
 
 ALTER TABLE employees_contracts ADD CONSTRAINT emp_contracts_dates_check CHECK(hire_date + 183 < end_date);
 
+--ALTER TABLE income_invoices ADD payment_term_id INTEGER;
 --ALTER TABLE income_invoices ADD  transaction_id  INTEGER;
 CREATE TABLE income_invoices (
     income_invoice_id   INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
-    income_invoice_nr   NVARCHAR2(20) NOT NULL,
+    income_invoice_no   NVARCHAR2(20) NOT NULL,
     transaction_id      INTEGER,
     wholesale_client_id INTEGER NOT NULL,
-    income_invoice_date TIMESTAMP
+    income_invoice_date TIMESTAMP,
+    payment_term_id     INTEGER,
+    CONSTRAINT payment_term_UN UNIQUE (payment_term_id)
 );
 
 ALTER TABLE income_invoices ADD CONSTRAINT invoices_pk PRIMARY KEY ( income_invoice_id );
@@ -127,6 +130,12 @@ ALTER TABLE income_invoices ADD CONSTRAINT incomeinvoices_nr_un UNIQUE ( income_
 ALTER TABLE income_invoices
     ADD CONSTRAINT invoices_transactions_fk FOREIGN KEY ( transaction_id )
         REFERENCES transactions ( transaction_id );
+
+ALTER TABLE income_invoices
+    ADD CONSTRAINT invoices_terms_FK FOREIGN KEY (payment_term_id)
+    REFERENCES payment_terms (payment_term_id);
+
+ALTER TABLE income_invoices ADD CONSTRAINT payment_term_UN UNIQUE (payment_term_id);
 
 
 CREATE TABLE invoice_products_lists (
@@ -172,7 +181,7 @@ ALTER TABLE ordered_products_lists ADD CONSTRAINT orderedproductslist_pk PRIMARY
                                                                                        product_id );
 
 CREATE TABLE orders (
-    order_id        INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
+    order_id        INTEGER GENERATED ALWAYS AS IDENTITY,
     order_nr        NVARCHAR2(20),
     supplier_id     SMALLINT NOT NULL,
     order_send_date DATE
@@ -357,7 +366,7 @@ ALTER TABLE transactions ADD CONSTRAINT transactions__un_receipt UNIQUE ( receip
 
 --DROP TABLE wholesale_clients;
 CREATE TABLE wholesale_clients (
-    wholesale_client_id   INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
+    wholesale_client_id   INTEGER GENERATED ALWAYS AS IDENTITY,
     wholesale_client_name NVARCHAR2(100) NOT NULL,
     address_id            INTEGER,
     nip                   VARCHAR2(10 CHAR),
@@ -375,6 +384,15 @@ ALTER TABLE wholesale_clients ADD CONSTRAINT clients_pk PRIMARY KEY ( wholesale_
 ALTER TABLE wholesale_clients ADD CONSTRAINT wholesale_clients_regon_un UNIQUE ( regon );
 
 ALTER TABLE wholesale_clients ADD CONSTRAINT wholesale_clients_nip_un UNIQUE ( nip );
+
+CREATE TABLE payment_terms (
+    payment_term_id     INTEGER GENERATED ALWAYS AS IDENTITY, 
+    payment_term_name   VARCHAR(50),
+    days_to_payment     INTEGER,
+    CONSTRAINT PK_payment_term PRIMARY KEY (payment_term_id),
+    CONSTRAINT UN_payment_term_name UNIQUE (payment_term_name)
+);
+
 
 ALTER TABLE wholesale_clients
     ADD CONSTRAINT clients_adresses_fk FOREIGN KEY ( address_id )
