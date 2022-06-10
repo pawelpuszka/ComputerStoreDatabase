@@ -251,6 +251,7 @@ IS
                 ,at_transactions(trnscts).start_time
                 ,at_transactions(trnscts).end_time
             );
+            COMMIT;
     END copy_data_into_transactions_tab;
     
 BEGIN
@@ -281,4 +282,5 @@ END;
 
 SELECT *
 FROM transactions
-where rownum < 100;
+where rownum < 100
+ORDER BY start_time;
