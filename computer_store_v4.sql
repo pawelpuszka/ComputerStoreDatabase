@@ -139,8 +139,7 @@ ALTER TABLE income_invoices ADD CONSTRAINT payment_term_UN UNIQUE (payment_term_
 
 
 CREATE TABLE invoice_products_lists (
-    invoice_list_id       INTEGER GENERATED ALWAYS AS IDENTITY
-        CONSTRAINT nnc_rec_prod_lists_rec_list_id NOT NULL,
+    invoice_list_id       INTEGER GENERATED ALWAYS AS IDENTITY,
     income_invoice_id     INTEGER NOT NULL,
     product_id            INTEGER NOT NULL,
     purchased_product_qty SMALLINT
@@ -368,6 +367,7 @@ ALTER TABLE transactions ADD CONSTRAINT transactions__un_receipt UNIQUE ( receip
 CREATE TABLE wholesale_clients (
     wholesale_client_id   INTEGER GENERATED ALWAYS AS IDENTITY,
     wholesale_client_name NVARCHAR2(100) NOT NULL,
+    loyalty_card_id       INTEGER,
     address_id            INTEGER,
     nip                   VARCHAR2(10 CHAR),
     regon                 VARCHAR2(9 BYTE),
@@ -378,6 +378,7 @@ COMMENT ON COLUMN wholesale_clients.wholesale_client_name IS
     'informacje o klientach hurtowych';
 
 ALTER TABLE wholesale_clients ADD CONSTRAINT clients_pk PRIMARY KEY ( wholesale_client_id );
+
 
 --ALTER TABLE wholesale_clients ADD email VARCHAR2(50 CHAR);
 --ALTER TABLE wholesale_clients ADD regon VARCHAR2(9 BYTE);
@@ -393,6 +394,15 @@ CREATE TABLE payment_terms (
     CONSTRAINT UN_payment_term_name UNIQUE (payment_term_name)
 );
 
+CREATE TABLE clients_loyalty_cards (
+    loyalty_card_id	    INTEGER GENERATED ALWAYS AS IDENTITY,
+    loyalty_card_label  VARCHAR2 (15 CHAR),
+    CONSTRAINT loyalty_card_PK PRIMARY KEY (loyalty_card_id)
+);
+
+ALTER TABLE wholesale_clients 
+    ADD CONSTRAINT wholesale_clients_cards_fk FOREIGN KEY (loyalty_card_id)
+    REFERENCES clients_loyalty_cards (loyalty_card_id);
 
 ALTER TABLE wholesale_clients
     ADD CONSTRAINT clients_adresses_fk FOREIGN KEY ( address_id )
