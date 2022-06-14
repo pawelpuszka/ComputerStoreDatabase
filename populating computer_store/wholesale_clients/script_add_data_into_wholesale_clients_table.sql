@@ -71,6 +71,85 @@ FROM
     wholesale_clients_copy w
 ;
 
+DROP PROCEDURE set_loyalty_card_to;
+CREATE OR REPLACE
+PROCEDURE set_loyalty_card_to(in_number_of_clients INTEGER)
+IS
+    v_random_client_id  wholesale_clients.wholesale_client_id%TYPE;
+    v_random_card_id    wholesale_clients.loyalty_card_id%TYPE;
+    
+BEGIN
+    FOR client IN 1..in_number_of_clients 
+    LOOP
+        v_random_card_id := DBMS_RANDOM.value(1, 2);
+        v_random_client_id := DBMS_RANDOM.value(1, 27);
+        UPDATE wholesale_clients
+        SET loyalty_card_id = v_random_card_id
+        WHERE wholesale_client_id = v_random_client_id
+        ;
+    END LOOP;
+END set_loyalty_card_to;
+/
+
+EXECUTE set_loyalty_card_to(13);
+/
+
+select *
+from wholesale_clients;
+
+UPDATE wholesale_clients
+SET loyalty_card_id = NULL;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
