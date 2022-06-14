@@ -4,77 +4,92 @@ DROP PROCEDURE generate_income_invoices_data;
 CREATE OR REPLACE 
 PROCEDURE generate_income_invoices_data 
 IS
-    TYPE income_invoces_type IS TABLE OF income_invoices%ROWTYPE INDEX BY PLS_INTEGER; 
-    TYPE transactions_type IS TABLE OF transactions%ROWTYPE INDEX BY PLS_INTEGER;
+    TYPE transaction_rec IS RECORD (
+         transaction_id     transactions.transaction_id%TYPE
+        ,payment_method_id  transactions.payment_method_id%TYPE
+        ,status_id          transactions.status_id%TYPE
+        ,start_time         transactions.start_time%TYPE
+        --,is_used          NUMBER(1, 0)
+    );
+    TYPE transaction_type IS TABLE OF transaction_rec INDEX BY PLS_INTEGER;
+    TYPE invoice_type IS TABLE OF income_invoices%ROWTYPE INDEX BY PLS_INTEGER;
     
-    at_invoices     income_invoces_type;
-    at_transactions transactions_type;
+    at_transactions transaction_type;
+    at_invoices     invoice_type;
     
     PROCEDURE get_transactions IS
     BEGIN
-        SELECT *
-        BULK COLLECT INTO at_transactions
-        FROM transactions;
+        SELECT
+             transaction_id
+            ,payment_method_id 
+            ,status_id
+            ,start_time
+        BULK COLLECT INTO
+            at_transactions
+        FROM 
+            transactions
+        WHERE 
+            status_id = 5
+            AND
+            delivery_method_id != 3
+        ;
     END get_transactions;
+        
     
-    PROCEDURE generate_transaction_ids_for_invoices 
-    IS
-        at_invoce_transactions  transactions_type;
-        v_random_index          INTEGER;
-        
-        FUNCTION index_exists(in_index INTEGER) RETURN BOOLEAN IS
-        BEGIN
-            FOR idx IN at_invoce_transactions.FIRST..at_invoce_transactions.LAST
-            LOOP
-                IF at_invoce_transactions(idx).transaction_id IS NULL OR in_index != at_invoce_transactions(idx).transaction_id  THEN
-                    RETURN FALSE;
-                END IF;
-            END LOOP;
-            RETURN TRUE;
-        END index_exists;
-        
-        FUNCTION is_letter(in_index INTEGER) RETURN BOOLEAN IS
-        BEGIN
-            FOR idx IN at_transactions.FIRST..at_transactions.LAST
-            LOOP
-                IF at_transactions(idx).transaction_id = in_index AND at_transactions(idx).delivery_method_id = 3 THEN --3 - letter(delivery method)
-                    RETURN TRUE;
-                END IF;
-            END LOOP;
-            RETURN FALSE;
-        END is_letter;
-        
-        PROCEDURE copy_transactions_into_invoices IS
-        BEGIN
-            FOR idx IN at_invoce_transactions.FIRST..at_invoce_transactions.LAST
-            LOOP
-                at_invoices(idx).transaction_id := at_invoce_transactions(idx).transaction_id;
-                dbms_output.put_line(idx || ':  ' || at_invoices(idx).transaction_id);
-            END LOOP;
-        END copy_transactions_into_invoices;
-        
+    PROCEDURE set_transaction_id(in_index INTEGER) IS
     BEGIN
-        get_transactions();
-        v_random_index := DBMS_RANDOM.value(1, 2000);
-        at_invoce_transactions(1).transaction_id := v_random_index;
-        FOR idx IN 1..700
-        LOOP
-            v_random_index := DBMS_RANDOM.value(1, 2000);
-            IF NOT index_exists(v_random_index) AND NOT is_letter(v_random_index) THEN
-                at_invoce_transactions(idx).transaction_id := v_random_index;
-                --dbms_output.put_line(idx || ':  ' || at_invoce_transactions(idx).transaction_id);
-            END IF;
-        END LOOP;
-        copy_transactions_into_invoices();
-    END generate_transaction_ids_for_invoices;
+        at_invoices(in_index).transaction_id := at_transactions(in_index).transaction_id;
+    END set_transaction_id;
     
     
-    /*PROCEDURE generate_invoce_no 
-    IS*/
+    PROCEDURE set_invoice_date(in_index INTEGER) IS
+    BEGIN
+        IF at_invoices(in_index).transaction_id = at_transactions(in_index).transaction_id THEN
+            at_invoices(in_index).income_invoice_date := at_transactions(in_index).start_time;
+        END IF;
+    END set_invoice_date;
     
+    
+    PROCEDURE set_client_id(in_index INTEGER) 
+    IS
+        TYPE wholesale_client_type IS TABLE OF wholesale_clients.wholesale_client_id%TYPE INDEX BY PLS_INTEGER;
+        v_random_client_id  income_invoices.wholesale_client_id%TYPE;
+        at_clients          wholesale_client_type;
+        
+        PROCEDURE get_clients IS
+        BEGIN
+            SELECT 
+                wholesale_client_id
+            BULK COLLECT INTO
+                at_clients 
+            FROM 
+                wholesale_clients
+            ;
+        END get_clients;
+    BEGIN
+        get_clients();
+        v_random_client_id := DBMS_RANDOM.value(1, at_clients.COUNT);
+        at_invoices(in_index).wholesale_client_id := at_clients(v_random_client_id);
+    END set_client_id;
+    
+    PROCEDURE set_payment_term IS
+    BEGIN
+        NULL;s
+    END set_payment_term;
     
 BEGIN
-    generate_transaction_ids_for_invoices();
+    get_transactions();
+    
+    FOR idx IN 1..747
+    LOOP
+        set_transaction_id_for_invoice(idx);
+        set_invoice_date(idx);
+        set_client_for_invoice(idx);
+        DBMS_OUTPUT.put_line(idx || ' ' || 
+                             'transaction_id: ' || at_invoices(idx).transaction_id || ' ' ||
+                             'invoice_date: ' || at_invoices(idx).income_invoice_date || ' ' ||
+                             'client_id: ' || at_invoices(idx).wholesale_client_id);
+    END LOOP;
 END generate_income_invoices_data;
 /
 
