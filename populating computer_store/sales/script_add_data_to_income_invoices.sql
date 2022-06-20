@@ -39,9 +39,9 @@ IS
         FROM 
             transactions
         WHERE 
-            (status_id = 5 OR status_id = 2)
+            (status_id IN (2, 3, 5))
             AND
-            (delivery_method_id != 3 OR delivery_method_id != 4)
+            (delivery_method_id IN (1, 2))
         ;
     END get_transactions;
     
@@ -54,9 +54,9 @@ IS
         FROM 
             transactions
         WHERE 
-            (status_id = 5 OR status_id = 2)
+            (status_id IN (2, 5))
             AND
-            (delivery_method_id != 3 OR delivery_method_id != 4)
+            (delivery_method_id IN (1, 2))
         ;
     END get_transactions_count;
     
@@ -71,7 +71,7 @@ IS
             wholesale_clients
         ;
     END get_clients;
-        
+    
     
     PROCEDURE set_transaction_id(in_index INTEGER) IS
     BEGIN
@@ -98,10 +98,9 @@ IS
     
     PROCEDURE set_payment_term_id(in_index INTEGER) 
     IS
-        
         v_client_id             wholesale_clients.wholesale_client_id%TYPE;
         v_client_rec            rec_client_type;
-        
+            
             FUNCTION get_current_client(in_client_id wholesale_clients.wholesale_client_id%TYPE) RETURN rec_client_type
             IS
                 v_current_client rec_client_type;
@@ -115,7 +114,6 @@ IS
                 ;
                 RETURN v_current_client;
             END get_current_client;
-            
             
             FUNCTION has_loyalty_card RETURN BOOLEAN IS
             BEGIN
@@ -146,11 +144,10 @@ IS
         ELSE
             at_invoices(in_index).payment_term_id := 1;
         END IF;
-            
     END set_payment_term_id;
     
     
-    PROCEDURE overwrite_end_date_for_finihed_transactions(in_index)
+    PROCEDURE
     
 BEGIN
     get_transactions();
@@ -174,3 +171,92 @@ END generate_income_invoices_data;
 
 EXECUTE generate_income_invoices_data();
 /
+
+--EXECUTE WHEN BOTH TRANSACTIONS AND INCOME_INVOICES ARE POPULATED
+PROCEDURE update_transaction_end_time 
+IS
+    PROCEDURE overwrite_end_date_for_finished_transactions
+    IS
+        CURSOR c_current_transact IS
+            SELECT
+                 t.transaction_id
+                ,t.start_time
+                ,t.end_time
+                ,i.payment_term_id
+            FROM 
+                transactions t
+                INNER JOIN income_invoices i
+                    ON t.transaction_id = i.transaction_id
+            WHERE 
+                t.status_id = 5;
+        
+       v_transact           c_current_transact%ROWTYPE;
+       v_random_days_num    INTEGER;
+    BEGIN
+        OPEN c_current_transact;
+        LOOP
+            FETCH c_current_transact INTO v_transact;
+            EXIT WHEN c_current_transact%NOTFOUND;
+            IF v_transact.payment_term_id = 4 THEN
+                v_random_days_num := DBMS_RANDOM.value(10, 45);
+            ELSIF v_transact.payment_term_id = 3 THEN
+                v_random_days_num := DBMS_RANDOM.value(10, 30);
+            ELSIF v_transact.payment_term_id = 2 THEN
+                v_random_days_num := DBMS_RANDOM.value(1, 14);
+            ELSE
+                v_random_days_num := DBMS_RANDOM.value(1, 7);
+            END IF;
+            
+            UPDATE transactions
+            SET end_time = start_time + v_random_days_num
+            WHERE transaction_id = v_transact.transaction_id;
+        END LOOP;
+        CLOSE c_current_transact;
+    END overwrite_end_date_for_finished_transactions;
+                
+                
+    PROCEDURE overwrite_end_date_for_cancelled_transactions
+    IS
+        CURSOR c_current_transact IS
+            SELECT
+                 t.transaction_id
+                ,t.start_time
+                ,t.end_time
+                ,i.payment_term_id
+            FROM 
+                transactions t
+                INNER JOIN income_invoices i
+                    ON t.transaction_id = i.transaction_id
+            WHERE 
+                t.status_id = 3;
+        
+        v_transact    c_current_transact%ROWTYPE;        
+        v_days_over   INTEGER;       
+    BEGIN            
+        OPEN c_current_transact;
+        LOOP
+            FETCH c_current_transact INTO v_transact;
+            EXIT WHEN c_current_transact%NOTFOUND;
+            IF v_transact.payment_term_id = 4 THEN
+                v_days_over := 46;
+            ELSIF v_transact.payment_term_id = 3 THEN
+                v_days_over := 31;
+            ELSIF v_transact.payment_term_id = 2 THEN
+                v_days_over := 15;
+            ELSE
+                v_days_over := 8;
+            END IF;
+            
+            UPDATE transactions
+            SET end_time = start_time + v_days_over
+            WHERE transaction_id = v_transact.transaction_id;
+        END LOOP;
+        CLOSE c_current_transact;            
+                
+    END overwrite_end_date_for_cancelled_transactions;            
+    
+BEGIN
+    overwrite_end_date_for_finished_transactions();
+    overwrite_end_date_for_cancelled_transactions();
+END update_transaction_end_time;
+

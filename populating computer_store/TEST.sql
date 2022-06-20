@@ -1,5 +1,11 @@
 SET SERVEROUTPUT ON;
 
+alter table transactions modify transaction_id GENERATED ALWAYS AS IDENTITY (START WITH 1);
+SELECT count(*)
+FROM transactions
+;
+truncate TABLE transactions;
+
 INSERT INTO payment_terms(payment_term_name, days_to_payment)
 VALUES('zerowy', 0);
 
@@ -18,16 +24,15 @@ select PAYMENT_METHOD_ID
 from transactions
 where DELIVERY_METHOD_ID = 1;
 
-        SELECT
-             transaction_id
-            ,payment_method_id 
-            ,delivery_method_id
-            ,status_id
-            ,start_time
-            ,end_time
-        FROM 
-            transactions
-        WHERE 
-            (status_id = 5 OR status_id = 2)
-            AND
-            (delivery_method_id != 3 OR delivery_method_id != 4);
+select 
+     wc.WHOLESALE_CLIENT_NAME
+    ,wc.LOYALTY_CARD_ID
+from 
+    wholesale_clients wc
+    inner join income_invoices i
+        on wc.WHOLESALE_CLIENT_ID = i.WHOLESALE_CLIENT_ID
+where
+    i.TRANSACTION_ID = 822
+;
+
+       
