@@ -386,6 +386,8 @@ ALTER TABLE wholesale_clients ADD CONSTRAINT wholesale_clients_regon_un UNIQUE (
 
 ALTER TABLE wholesale_clients ADD CONSTRAINT wholesale_clients_nip_un UNIQUE ( nip );
 
+--alter table payment_terms modify payment_term_id GENERATED ALWAYS AS IDENTITY (START WITH 1);
+--truncate table payment_terms;
 CREATE TABLE payment_terms (
     payment_term_id     INTEGER GENERATED ALWAYS AS IDENTITY, 
     payment_term_name   VARCHAR(50),

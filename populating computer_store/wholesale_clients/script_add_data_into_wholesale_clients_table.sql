@@ -81,7 +81,7 @@ IS
 BEGIN
     FOR client IN 1..in_number_of_clients 
     LOOP
-        v_random_card_id := DBMS_RANDOM.value(1, 2);
+        v_random_card_id := DBMS_RANDOM.value(1, 3);
         v_random_client_id := DBMS_RANDOM.value(1, 27);
         UPDATE wholesale_clients
         SET loyalty_card_id = v_random_card_id
@@ -91,7 +91,7 @@ BEGIN
 END set_loyalty_card_to;
 /
 
-EXECUTE set_loyalty_card_to(13);
+EXECUTE set_loyalty_card_to(4);
 /
 
 select *
