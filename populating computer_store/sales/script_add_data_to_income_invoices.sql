@@ -24,6 +24,7 @@ IS
     at_transactions     transaction_type;
     at_invoices         invoice_type;
     at_clients          wholesale_client_type;
+    v_trans_count       INTEGER;
     
     PROCEDURE get_transactions IS
     BEGIN
@@ -38,11 +39,26 @@ IS
         FROM 
             transactions
         WHERE 
-            status_id = 5 OR status_id = 2
+            (status_id = 5 OR status_id = 2)
             AND
-            delivery_method_id != 3 OR delivery_method_id != 4
+            (delivery_method_id != 3 OR delivery_method_id != 4)
         ;
     END get_transactions;
+    
+    PROCEDURE get_transactions_count IS
+    BEGIN
+        SELECT
+            COUNT(*)
+        INTO
+            v_trans_count
+        FROM 
+            transactions
+        WHERE 
+            (status_id = 5 OR status_id = 2)
+            AND
+            (delivery_method_id != 3 OR delivery_method_id != 4)
+        ;
+    END get_transactions_count;
     
     PROCEDURE get_clients IS
     BEGIN
@@ -133,11 +149,15 @@ IS
             
     END set_payment_term_id;
     
+    
+    PROCEDURE overwrite_end_date_for_finihed_transactions(in_index)
+    
 BEGIN
     get_transactions();
     get_clients();
+    get_transactions_count();
     
-    FOR idx IN 1..747
+    FOR idx IN 1..v_trans_count
     LOOP
         set_transaction_id(idx);
         set_invoice_date(idx);

@@ -190,8 +190,8 @@ IS
             
             PROCEDURE set_finished_trans_card_blik_end_date(in_id INTEGER) IS
             BEGIN
-                v_rand_days_num := DBMS_RANDOM.value(((1/24) * (1/60)),((1/24) * (1/6)));
-                at_transactions(in_id).end_time := at_transactions(in_id).start_time + v_rand_days_num;
+                v_rand_days_num := DBMS_RANDOM.value(1, 15);
+                at_transactions(in_id).end_time := at_transactions(in_id).start_time + (v_rand_days_num / 1440);
             END set_finished_trans_card_blik_end_date;
             
             PROCEDURE set_finished_trans_transfer_end_date(in_id INTEGER) IS
@@ -255,7 +255,7 @@ IS
     END copy_data_into_transactions_tab;
     
 BEGIN
-    FOR next_id IN 1..2000
+    FOR next_id IN 1..10000
     LOOP
         set_transaction_id(next_id);
         set_delivery_id(next_id);
