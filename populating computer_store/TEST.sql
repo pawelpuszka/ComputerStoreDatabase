@@ -39,4 +39,12 @@ where
     i.TRANSACTION_ID = 822
 ;
 
-       
+select count(i.transaction_id)
+from transactions t
+    inner join income_invoices i
+        on t.transaction_id = i.transaction_id
+where t.status_id = 3
+    and 
+    i.payment_term_id = 3;
+    
+

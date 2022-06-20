@@ -212,6 +212,7 @@ EXECUTE generate_income_invoices_data();
 /
 
 --EXECUTE WHEN BOTH TRANSACTIONS AND INCOME_INVOICES ARE POPULATED
+CREATE OR REPLACE
 PROCEDURE update_transaction_end_time 
 IS
     PROCEDURE overwrite_end_date_for_finished_transactions
