@@ -147,7 +147,43 @@ IS
     END set_payment_term_id;
     
     
-    PROCEDURE
+    PROCEDURE generate_invoice_no(in_index INTEGER)
+    IS
+        v_invoice_no    NVARCHAR2(40);
+        v_transact_no   VARCHAR2(10);
+        v_month_no      VARCHAR2(10);
+        v_year_no       VARCHAR2(10);
+        v_client_id     VARCHAR2(10);
+    BEGIN
+        v_transact_no := TO_CHAR(at_invoices(in_index).transaction_id, '999999');
+        v_month_no := TO_CHAR(EXTRACT(MONTH FROM at_invoices(in_index).income_invoice_date), '99');
+        v_year_no := TO_CHAR(EXTRACT(YEAR FROM at_invoices(in_index).income_invoice_date), '9999');
+        v_client_id := TO_CHAR(at_invoices(in_index).wholesale_client_id, '999');
+        v_invoice_no := 'FV/' || v_transact_no || '/' || v_month_no || '/' || v_year_no || '/' || v_client_id;
+        v_invoice_no := REPLACE(v_invoice_no, ' ', '');
+        at_invoices(in_index).income_invoice_no := v_invoice_no;
+    END generate_invoice_no;
+    
+    
+    PROCEDURE copy_data_into_invoices_table IS
+    BEGIN
+        FORALL invoice IN at_invoices.FIRST..at_invoices.LAST
+            INSERT INTO income_invoices(
+                 income_invoice_no
+                ,wholesale_client_id
+                ,income_invoice_date
+                ,transaction_id
+                ,payment_term_id
+            )
+            VALUES(
+                 at_invoices(invoice).income_invoice_no
+                ,at_invoices(invoice).wholesale_client_id
+                ,at_invoices(invoice).income_invoice_date
+                ,at_invoices(invoice).transaction_id
+                ,at_invoices(invoice).payment_term_id
+            );
+        COMMIT;
+    END copy_data_into_invoices_table;
     
 BEGIN
     get_transactions();
@@ -160,12 +196,15 @@ BEGIN
         set_invoice_date(idx);
         set_client_id(idx);
         set_payment_term_id(idx);
+        generate_invoice_no(idx);
         DBMS_OUTPUT.put_line(idx || ' ' || 
                              'transaction_id: ' || at_invoices(idx).transaction_id || ' ' ||
                              'invoice_date: ' || at_invoices(idx).income_invoice_date || ' ' ||
                              'client_id: ' || at_invoices(idx).wholesale_client_id || ' ' ||
-                             'payment_term_id: ' || at_invoices(idx).payment_term_id);
+                             'payment_term_id: ' || at_invoices(idx).payment_term_id || ' ' ||
+                             'invoice_no: ' || at_invoices(idx).income_invoice_no );
     END LOOP;
+    copy_data_into_invoices_table();
 END generate_income_invoices_data;
 /
 
@@ -259,4 +298,7 @@ BEGIN
     overwrite_end_date_for_finished_transactions();
     overwrite_end_date_for_cancelled_transactions();
 END update_transaction_end_time;
+/
+
+EXECUTE update_transaction_end_time();
 

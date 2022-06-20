@@ -1,6 +1,6 @@
 SET SERVEROUTPUT ON;
 
-alter table transactions modify transaction_id GENERATED ALWAYS AS IDENTITY (START WITH 1);
+alter table INCOME_INVOICES modify INCOME_INVOICE_ID GENERATED ALWAYS AS IDENTITY (START WITH 1);
 SELECT count(*)
 FROM transactions
 ;
@@ -10,6 +10,10 @@ INSERT INTO payment_terms(payment_term_name, days_to_payment)
 VALUES('zerowy', 0);
 
 alter table WHOLESALE_CLIENTS add loyalty_card_id INTEGER;
+
+ALTER TABLE income_invoices MODIFY INCOME_INVOICE_NR VARCHAR2(40);
+ALTER TABLE income_invoices RENAME COLUMN income_invoice_nr TO income_invoice_no;
+ALTER TABLE income_invoices DROP CONSTRAINT PAYMENT_TERM_UN;
 
 CREATE TABLE clients_loyalty_cards (
     loyalty_card_id	    INTEGER GENERATED ALWAYS AS IDENTITY,
