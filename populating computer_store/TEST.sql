@@ -39,12 +39,25 @@ where
     i.TRANSACTION_ID = 822
 ;
 
-select count(i.transaction_id)
+select i.transaction_id, case 
+                            when t.end_time - t.start_time > interval '31' day then 'zle'
+                            when t.end_time - t.start_time = interval '31' day then 'ok'
+                            when t.end_time - t.start_time < interval '31' day then 'zle'
+                         end as roznica_dat
 from transactions t
     inner join income_invoices i
         on t.transaction_id = i.transaction_id
 where t.status_id = 3
     and 
     i.payment_term_id = 3;
-    
+
+select i.transaction_id, (t.end_time - t.start_time) as roznica_dat
+from transactions t
+    inner join income_invoices i
+        on t.transaction_id = i.transaction_id
+where t.status_id = 3
+    and 
+    i.payment_term_id = 3
+;
+
 
