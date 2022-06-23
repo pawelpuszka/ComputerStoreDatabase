@@ -24,40 +24,75 @@ CREATE TABLE clients_loyalty_cards (
 INSERT INTO CLIENTS_LOYALTY_CARDS (LOYALTY_CARD_LABEL)
 VALUES('zwykla');
 
-select PAYMENT_METHOD_ID
-from transactions
-where DELIVERY_METHOD_ID = 1;
+update transaction_statuses
+set status_name = 'cancelled'
+where status_id = 3;
 
-select 
-     wc.WHOLESALE_CLIENT_NAME
-    ,wc.LOYALTY_CARD_ID
-from 
-    wholesale_clients wc
-    inner join income_invoices i
-        on wc.WHOLESALE_CLIENT_ID = i.WHOLESALE_CLIENT_ID
-where
-    i.TRANSACTION_ID = 822
-;
 
-select i.transaction_id, case 
-                            when t.end_time - t.start_time > interval '31' day then 'zle'
-                            when t.end_time - t.start_time = interval '31' day then 'ok'
-                            when t.end_time - t.start_time < interval '31' day then 'zle'
-                         end as roznica_dat
-from transactions t
-    inner join income_invoices i
-        on t.transaction_id = i.transaction_id
-where t.status_id = 3
-    and 
-    i.payment_term_id = 3;
 
-select i.transaction_id, (t.end_time - t.start_time) as roznica_dat
-from transactions t
-    inner join income_invoices i
-        on t.transaction_id = i.transaction_id
-where t.status_id = 3
-    and 
-    i.payment_term_id = 3
-;
+
+    PROCEDURE get_invoice_info IS
+    BEGIN
+        SELECT 
+             income_invoice_id
+            ,payment_term_id
+        BULK COLLECT INTO
+            at_invoices
+        FROM
+            income_invoices
+        ;
+    END get_invoice_info;
+    
+    PROCEDURE get_products_volume IS
+    BEGIN
+        SELECT COUNT(*)
+        INTO v_prods_volume
+        FROM products
+        ;
+    END get_products_volume;
+    
+    PROCEDURE get_all_products_ids IS
+    BEGIN
+        SELECT product_id
+        BULK COLLECT INTO at_product_ids
+        FROM products;
+    END get_all_products_ids;
+    
+    
+    FUNCTION is_45_days(in_id INTEGER) RETURN BOOLEAN IS
+    BEGIN
+        RETURN  at_invoices(in_id).payment_term_id = 4;
+    END is_45_days;
+    
+    
+    PROCEDURE set_products_on_list(in_number_of_prods INTEGER, in_invoice_id INTEGER) 
+    IS
+        v_random_prod_id INTEGER;
+            
+            FUNCTION is_prod_on_list(in_prod_id INTEGER, in_current_invoice_id income_invoices.income_invoice_id%TYPE) RETURN BOOLEAN IS
+            BEGIN
+                IF at_invoice_products_lists.COUNT = 0 THEN
+                    RETURN FALSE;
+                END IF;
+                FOR i IN at_invoice_products_lists.FIRST..at_invoice_products_lists.LAST
+                LOOP
+                    IF in_prod_id = at_invoice_products_lists(i).product_id AND in_current_invoice_id = at_invoice_products_lists(i).income_invoice_id THEN
+                        RETURN TRUE;
+                    END IF;
+                END LOOP;
+                RETURN FALSE;
+            END is_prod_on_list;
+    BEGIN
+        FOR prod IN 1..in_number_of_prods
+        LOOP
+            at_invoice_products_lists(prod).income_invoice_id := in_invoice_id;--at_invoices(in_invoice_id).income_invoice_id;
+            --LOOP
+                v_random_prod_id := DBMS_RANDOM.value(1, v_prods_volume);
+                --EXIT WHEN NOT is_prod_on_list(v_random_prod_id, at_invoice_products_lists(prod).income_invoice_id);
+            --END LOOP;
+            at_invoice_products_lists(prod).product_id := at_product_ids(v_random_prod_id);
+            at_invoice_products_lists(prod).purchased_product_qty := DBMS_RANDOM.value(1, 25);
+        END LOOP;
+    END set_products_on_list;
 
 
