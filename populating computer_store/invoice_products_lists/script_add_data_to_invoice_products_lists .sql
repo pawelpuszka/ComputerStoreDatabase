@@ -1,7 +1,7 @@
-SET SERVEROUTPUT ON ;
+SET SERVEROUTPUT ON SIZE UNLIMITED;
 
 CREATE OR REPLACE
-PROCEDURE generate_invoice_products_lists 
+PROCEDURE generate_invoice_products_lists_first_part 
 IS
     TYPE rec_invoice IS RECORD(
          income_invoice_id   income_invoices.income_invoice_id%TYPE
@@ -37,6 +37,8 @@ IS
             at_invoices_ids
         FROM
             income_invoices
+        WHERE
+            payment_term_id IN (2, 3, 4)
         ;
     END get_invoice_info;
     
@@ -67,9 +69,23 @@ IS
     
     FUNCTION is_short_term(in_id INTEGER) RETURN BOOLEAN IS
     BEGIN
-        RETURN at_invoices_ids(in_id).payment_term_id = STANDART_TERM;
+        RETURN at_invoices_ids(in_id).payment_term_id = SHORT_TERM;
     END is_short_term;
     
+    
+    PROCEDURE generate_list(v_products_max_qty INTEGER) IS
+    BEGIN
+        LOOP
+            at_invoice_products_lists(v_list_id).income_invoice_id := v_current_invoice_id;
+            v_random_product_id := DBMS_RANDOM.value(1, at_product_ids.COUNT);
+            at_invoice_products_lists(v_list_id).product_id := at_product_ids(v_random_product_id);
+            at_invoice_products_lists(v_list_id).purchased_product_qty := DBMS_RANDOM.value(1, v_products_max_qty);
+            v_list_id := v_list_id + 1;
+            v_iterator := v_iterator + 1;
+            EXIT WHEN v_iterator = v_number_of_prods_on_list;
+        END LOOP;
+        v_iterator := 1;
+    END generate_list;
        
 BEGIN
     v_list_id   := 1;
@@ -81,31 +97,45 @@ BEGIN
     LOOP
         v_current_invoice_id := at_invoices_ids(id).income_invoice_id;
         IF is_regular_customer(id) THEN
-            v_number_of_prods_on_list := DBMS_RANDOM.value(3, 15);
-            LOOP
-                at_invoice_products_lists(v_list_id).income_invoice_id := v_current_invoice_id;
-                v_random_product_id := DBMS_RANDOM.value(1, at_product_ids.COUNT);
-                at_invoice_products_lists(v_list_id).product_id := at_product_ids(v_random_product_id);
-                at_invoice_products_lists(v_list_id).purchased_product_qty := DBMS_RANDOM.value(1, 25);
-                v_list_id := v_list_id + 1;
-                v_iterator := v_iterator + 1;
-                EXIT WHEN v_iterator = v_number_of_prods_on_list;
-            END LOOP;
+            v_number_of_prods_on_list := DBMS_RANDOM.value(3, 9);
+            generate_list(25);
+        ELSIF is_long_term(id) THEN
+            v_number_of_prods_on_list := DBMS_RANDOM.value(3, 6);
+            generate_list(18);
+        ELSIF is_standart_term(id) THEN
+            v_number_of_prods_on_list := DBMS_RANDOM.value(2, 4);
+            generate_list(13);
+        /*ELSIF is_short_term(id) THEN
+            v_number_of_prods_on_list := DBMS_RANDOM.value(1, 3);
+            generate_list(10);
+        ELSE
+            v_number_of_prods_on_list := DBMS_RANDOM.value(1, 3);
+            generate_list(7);*/
         END IF;
-        v_iterator := 1;
     END LOOP;
-
-    for i in at_invoice_products_lists.FIRST..at_invoice_products_lists.LAST
-    loop
-    DBMS_OUTPUT.put_line(i || ' ' ||
-                         'invoice_id: ' || at_invoice_products_lists(i).income_invoice_id || ' ' ||
-                         'product_id: ' || at_invoice_products_lists(i).product_id || ' ' ||
-                         'quantity: ' || at_invoice_products_lists(i).purchased_product_qty);
-    end loop;
-END generate_invoice_products_lists;
+    
+    FORALL list_id IN at_invoice_products_lists.FIRST..at_invoice_products_lists.LAST
+        INSERT INTO invoice_products_lists(
+             income_invoice_id
+            ,product_id
+            ,purchased_product_qty
+        )
+        VALUES(
+             at_invoice_products_lists(list_id).income_invoice_id
+            ,at_invoice_products_lists(list_id).product_id
+            ,at_invoice_products_lists(list_id).purchased_product_qty
+        );
+    COMMIT;
+    at_invoice_products_lists.DELETE;
+    sys.DBMS_SESSION.free_unused_user_memory;
+    
+END generate_invoice_products_lists_first_part;
 /
 
-EXECUTE generate_invoice_products_lists();
+EXECUTE generate_invoice_products_lists_first_part();
+EXEC sys.DBMS_SESSION.free_unused_user_memory;
+
+
 
 
 
