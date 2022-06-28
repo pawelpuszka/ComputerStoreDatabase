@@ -127,6 +127,8 @@ BEGIN
         );
     COMMIT;
     at_invoice_products_lists.DELETE;
+    at_product_ids.DELETE;
+    at_invoices_ids.DELETE;
     sys.DBMS_SESSION.free_unused_user_memory;
     
 END generate_invoice_products_lists_first_part;

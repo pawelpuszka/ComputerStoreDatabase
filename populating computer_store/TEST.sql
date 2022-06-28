@@ -23,28 +23,85 @@ CREATE TABLE clients_loyalty_cards (
     CONSTRAINT loyalty_card_PK PRIMARY KEY (loyalty_card_id)
 );
 
-INSERT INTO CLIENTS_LOYALTY_CARDS (LOYALTY_CARD_LABEL)
-VALUES('zwykla');
+update payment_terms
+set PAYMENT_TERM_NAME = 'short'
+where PAYMENT_TERM_ID = 1;
+update payment_terms
+set PAYMENT_TERM_NAME = 'long'
+where PAYMENT_TERM_ID = 3;
+update payment_terms
+set PAYMENT_TERM_NAME = 'regular client'
+where PAYMENT_TERM_ID = 4;
+update payment_terms
+set PAYMENT_TERM_NAME = 'none'
+where PAYMENT_TERM_ID = 5;    
 
-update transaction_statuses
-set status_name = 'cancelled'
-where status_id = 3;
+alter table receipts add payment_term_id INTEGER;
+ALTER TABLE receipts 
+    ADD CONSTRAINT receipts_payment_terms_fk FOREIGN KEY (payment_term_id)
+    REFERENCES payment_terms (payment_term_id);
 
-TRUNCATE TABLE INVOICE_PRODUCTS_LISTS;
-alter table invoice_products_lists modify invoice_list_id GENERATED ALWAYS AS IDENTITY (START WITH 1);
-EXEC sys.DBMS_SESSION.free_unused_user_memory;
+SELECT *
+FROM TRANSACTIONS T
+    INNER JOIN INCOME_INVOICES I
+    ON T.TRANSACTION_ID = I.TRANSACTION_ID
+WHERE T.PAYMENT_METHOD_ID = 1
+AND T.DELIVERY_METHOD_ID = 2;
 
-select  count(distinct ipl.INCOME_INVOICE_ID), wc.WHOLESALE_CLIENT_NAME
-from wholesale_clients wc
-    inner join income_invoices i
-        on wc.WHOLESALE_CLIENT_ID = i.WHOLESALE_CLIENT_ID
-    inner join invoice_products_lists ipl
-        on i.INCOME_INVOICE_ID = ipl.INCOME_INVOICE_ID
-where i.payment_term_id = 1
-group by wc.WHOLESALE_CLIENT_NAME;
+SELECT 
+     t.transaction_id
+    ,t.start_time
+    ,t.end_time
+    ,ts.status_name
+    ,pm.PAYMENT_METHOD_NAME
+FROM transactions t
+    LEFT JOIN income_invoices i
+        ON t.transaction_id = i.transaction_id
+    inner join transaction_statuses ts
+        on t.STATUS_ID = ts.STATUS_ID
+    inner join payment_methods pm
+        on pm.PAYMENT_METHOD_ID = t.payment_method_id
+WHERE i.income_invoice_id IS NULL
+--and T.PAYMENT_METHOD_ID = 4
+--and t.STATUS_ID = 3
+and t.delivery_method_id = 4
+;
 
-select count(*)
-from income_invoices;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
