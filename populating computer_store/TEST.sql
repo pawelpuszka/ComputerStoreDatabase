@@ -67,7 +67,9 @@ WHERE i.income_invoice_id IS NULL
 and t.delivery_method_id = 4
 ;
 
-
+begin
+    DBMS_OUTPUT.put_line(dbms_random.value());
+end;
 
 
 
