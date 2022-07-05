@@ -77,15 +77,7 @@ IS
     BEGIN
         at_invoices(in_index).transaction_id := at_transactions(in_index).transaction_id;
     END set_transaction_id;
-    
-    
-    PROCEDURE set_invoice_date(in_index INTEGER) IS
-    BEGIN
-        IF at_invoices(in_index).transaction_id = at_transactions(in_index).transaction_id THEN
-            at_invoices(in_index).income_invoice_date := at_transactions(in_index).start_time;
-        END IF;
-    END set_invoice_date;
-    
+        
     
     PROCEDURE set_client_id(in_index INTEGER) 
     IS

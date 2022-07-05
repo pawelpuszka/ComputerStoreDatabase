@@ -143,8 +143,6 @@ BEGIN
                             'transaction_id: ' || at_receipts(idx).transaction_id || ' ' ||
                             'time of transaction: ' || at_transactions(idx).end_time || ' ' || at_transactions(idx).start_time || ' ' ||
                             'payment_term_id: ' || at_receipts(idx).payment_term_id);*/
-                           
-        
     END LOOP;
     copy_data_into_receipts();
     copy_end_date_into_transactions();
