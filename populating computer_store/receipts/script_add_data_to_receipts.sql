@@ -104,8 +104,30 @@ IS
     
     PROCEDURE copy_data_into_receipts IS
     BEGIN
-    
+        FORALL receipt IN at_receipts.FIRST..at_receipts.LAST
+            INSERT INTO receipts (
+                 receipt_no
+                ,transaction_id
+                ,payment_term_id
+            ) 
+            VALUES (
+                 at_receipts(receipt).receipt_no
+                ,at_receipts(receipt).transaction_id
+                ,at_receipts(receipt).payment_term_id
+            );
+    COMMIT;
     END copy_data_into_receipts;
+    
+    PROCEDURE copy_end_date_into_transactions IS
+    BEGIN
+        FOR trans IN at_transactions.FIRST..at_transactions.LAST
+        LOOP
+            UPDATE transactions
+            SET end_time = at_transactions(trans).end_time
+            WHERE transaction_id = at_transactions(trans).transaction_id
+            ;
+        END LOOP;
+    END copy_end_date_into_transactions;
     
 BEGIN
     get_transactions();
@@ -115,6 +137,7 @@ BEGIN
         set_transaction_id(idx);
         set_payment_term(idx);
         generate_receipt_number(idx);
+        
         /*DBMS_OUTPUT.put_line(idx || ' ' ||
                             'receipt_no: ' || at_receipts(idx).receipt_no || ' ' ||
                             'transaction_id: ' || at_receipts(idx).transaction_id || ' ' ||
@@ -123,15 +146,10 @@ BEGIN
                            
         
     END LOOP;
+    copy_data_into_receipts();
+    copy_end_date_into_transactions();
     
-    FORALL receipt IN at_receipts.FIRST..at_receipts.LAST
-       INSERT INTO receipts (
-            transaction_id
-       ) 
-       VALUES (
-            at_receipts(receipt).transaction_id
-       );
-    COMMIT;
+    
 END generate_receipts;
 /
 

@@ -1,6 +1,6 @@
 SET SERVEROUTPUT ON;
 
-alter table INCOME_INVOICES modify INCOME_INVOICE_ID GENERATED ALWAYS AS IDENTITY (START WITH 1);
+alter table RECEIPTS modify RECEIPT_ID GENERATED ALWAYS AS IDENTITY (START WITH 1);
 SELECT count(*)
 FROM transactions
 ;
@@ -70,12 +70,19 @@ and t.delivery_method_id = 4
 begin
     DBMS_OUTPUT.put_line(dbms_random.value());
 end;
+/
 
+truncate table receipts;
+ALTER TABLE receipts DROP CONSTRAINT RECEIPTS_TRANSACTION_UN;
+ALTER TABLE receipts DROP CONSTRAINT RECEIPTS__UN;
+alter table RECEIPTS modify RECEIPT_ID GENERATED ALWAYS AS IDENTITY (START WITH 1);
 
-
-
-
-
+select RECEIPT_ID, count(TRANSACTION_ID)
+from receipts
+--where TRANSACTION_ID
+group by RECEIPT_ID
+having count(TRANSACTION_ID) > 1;
+/
 
 
 
