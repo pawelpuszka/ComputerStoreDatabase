@@ -77,6 +77,11 @@ ALTER TABLE receipts DROP CONSTRAINT RECEIPTS_TRANSACTION_UN;
 ALTER TABLE receipts DROP CONSTRAINT RECEIPTS__UN;
 alter table RECEIPTS modify RECEIPT_ID GENERATED ALWAYS AS IDENTITY (START WITH 1);
 
+truncate table receipts;
+ALTER TABLE receipt_products_lists DROP CONSTRAINT RECEIPT_PRODUCTS_LISTS__UN;
+ALTER TABLE receipts DROP CONSTRAINT RECEIPTS__UN;
+alter table RECEIPTS modify RECEIPT_ID GENERATED ALWAYS AS IDENTITY (START WITH 1);
+
 select RECEIPT_ID, count(TRANSACTION_ID)
 from receipts
 --where TRANSACTION_ID
@@ -84,6 +89,13 @@ group by RECEIPT_ID
 having count(TRANSACTION_ID) > 1;
 /
 
+select r.*, t.*, (t.end_time - t.start_time) as czas_trwania
+from receipts r
+    inner join transactions t
+       on r.transaction_id = t.transaction_id
+where r.payment_term_id = 5
+and t.delivery_method_id = 4
+and t.end_time - t.start_time > interval '10' minute;
 
 
 
