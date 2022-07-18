@@ -36,10 +36,12 @@ IS
         ;
     END get_transactions;
     
+    
     PROCEDURE set_transaction_id(in_idx INTEGER) IS
     BEGIN
         at_receipts(in_idx).transaction_id := at_transactions(in_idx).transaction_id;
     END set_transaction_id;
+    
     
     PROCEDURE overwrite_transaction_end_date(in_idx INTEGER, is_online BOOLEAN) 
     IS
@@ -67,6 +69,7 @@ IS
             END CASE;
         END IF;
     END overwrite_transaction_end_date;
+    
     
     PROCEDURE set_payment_term(in_idx INTEGER) 
     IS
