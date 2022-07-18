@@ -89,13 +89,11 @@ group by RECEIPT_ID
 having count(TRANSACTION_ID) > 1;
 /
 
-select r.*, t.*, (t.end_time - t.start_time) as czas_trwania
-from receipts r
-    inner join transactions t
-       on r.transaction_id = t.transaction_id
-where r.payment_term_id = 5
-and t.delivery_method_id = 4
-and t.end_time - t.start_time > interval '10' minute;
+select numtodsinterval((systimestamp + 1) - systimestamp, 'minute')
+from dual;
+
+select numtodsinterval((sysdate + 1) - sysdate, 'minute')
+from dual;
 
 
 

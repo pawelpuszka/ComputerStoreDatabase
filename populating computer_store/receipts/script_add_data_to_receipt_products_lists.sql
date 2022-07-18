@@ -32,7 +32,7 @@ IS
             ,t.delivery_method_id
             ,t.start_time
             ,t.end_time
-        BULK COLLECT INTO
+       BULK COLLECT INTO
             at_receipts
         FROM 
             receipts r
@@ -66,17 +66,21 @@ IS
         RETURN at_receipts(in_idx).delivery_method_id = 4;
     END is_stationary_sale;
     
-    PROCEDURE set_prod_volume_when_stationary IS
+    PROCEDURE set_prod_volume_when_stationary (in_idx INTEGER) 
+    IS
+        v_start TIMESTAMP := at_receipts(in_idx).start_time;
+        v_end   TIMESTAMP := at_receipts(in_idx).end_time;
     BEGIN
-        IF v_duration < INTERVAL '2' MINUTE THEN
+        IF extract(MINUTE FROM v_end - v_start) < 2 THEN
             v_products_volume := DBMS_RANDOM.value(1, 2);
-        ELSIF v_duration >= INTERVAL '2' MINUTE AND v_duration < INTERVAL '5' MINUTE THEN
+        ELSIF extract(MINUTE FROM v_end - v_start) >= 2 AND extract(MINUTE FROM v_end - v_start) < 5 THEN
             v_products_volume := DBMS_RANDOM.value(1, 5);
-        ELSIF v_duration >= INTERVAL '5' MINUTE AND INTERVAL '10' MINUTE THEN
+        ELSIF extract(MINUTE FROM v_end - v_start) >= 5 AND extract(MINUTE FROM v_end - v_start) < 10 THEN
             v_products_volume := DBMS_RANDOM.value(3, 8);
         ELSE
             v_products_volume := DBMS_RANDOM.value(6, 10);
         END IF;
+        
     END set_prod_volume_when_stationary;
     
     
@@ -101,8 +105,16 @@ IS
     IS
         v_random_product_id products.product_id%TYPE := DBMS_RANDOM.value(1, at_all_products_ids.COUNT);
     BEGIN
+        --DBMS_OUTPUT.put_line('ID' || v_random_product_id);
         at_products_lists(in_list_id).product_id := at_all_products_ids(v_random_product_id);
     END set_product_id;
+    
+   /* FUNCTION get_product_id RETURN products.product_id%TYPE IS
+        v_random_product_id products.product_id%TYPE := DBMS_RANDOM.value(1, at_all_products_ids.COUNT);
+    BEGIN
+        DBMS_OUTPUT.put_line('ID' || v_random_product_id);
+        RETURN at_all_products_ids(v_random_product_id);
+    END get_product_id;*/
     
     
     PROCEDURE set_product_qty(in_list_id INTEGER) IS
@@ -112,20 +124,24 @@ IS
     
     
 BEGIN
+    get_all_receipts();
+    get_all_products_ids();
+    get_small_products_ids();
+    
     v_list_id := 1;
     FOR idx IN at_receipts.FIRST..at_receipts.LAST
     LOOP
         IF is_stationary_sale(idx) THEN
-            v_duration := at_receipts(idx).end_time - at_receipts(idx).start_time;
-            set_prod_volume_when_stationary();
+            set_prod_volume_when_stationary(idx);
             WHILE(v_products_volume > 0)
             LOOP
                 set_receipt_id(idx, v_list_id);
                 set_product_id(v_list_id);
+                --at_products_lists(v_list_id).product_id := get_product_id();
                 set_product_qty(v_list_id);
+                DBMS_OUTPUT.put_line('RECEIPT_ID: ' || at_products_lists(v_list_id).receipt_id || '; PRODUCT_ID: ' || at_products_lists(v_list_id).product_id || '; PURCHASED_PRODUCT_QTY: ' || at_products_lists(v_list_id).purchased_product_qty);
                 v_list_id := v_list_id + 1;
                 v_products_volume := v_products_volume - 1;
-                DBMS_OUTPUT.put_line(at_products_lists('RECEIPT_ID: ' || v_list_id).RECEIPT_ID || '; PRODUCT_ID: ' || at_products_lists(v_list_id).PRODUCT_ID || '; PURCHASED_PRODUCT_QTY: ' || at_products_lists(v_list_id).PURCHASED_PRODUCT_QTY);
             END LOOP;
        -- ELSIF is_sendby_letter(idx) THEN
         
@@ -134,4 +150,7 @@ BEGIN
     END LOOP;
 
 END generate_receipt_products_lists;
+/
+
+EXECUTE generate_receipt_products_lists();
 
