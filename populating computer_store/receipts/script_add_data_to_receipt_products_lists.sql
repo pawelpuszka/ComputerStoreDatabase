@@ -105,22 +105,28 @@ IS
     IS
         v_random_product_id products.product_id%TYPE := DBMS_RANDOM.value(1, at_all_products_ids.COUNT);
     BEGIN
-        --DBMS_OUTPUT.put_line('ID' || v_random_product_id);
         at_products_lists(in_list_id).product_id := at_all_products_ids(v_random_product_id);
     END set_product_id;
     
-   /* FUNCTION get_product_id RETURN products.product_id%TYPE IS
-        v_random_product_id products.product_id%TYPE := DBMS_RANDOM.value(1, at_all_products_ids.COUNT);
+    
+    PROCEDURE set_product_id_when_letter(in_list_id INTEGER)
+    IS
+        v_random_product_id products.product_id%TYPE := DBMS_RANDOM.value(1, at_small_products_ids.COUNT);
     BEGIN
-        DBMS_OUTPUT.put_line('ID' || v_random_product_id);
-        RETURN at_all_products_ids(v_random_product_id);
-    END get_product_id;*/
+        at_products_lists(in_list_id).product_id := at_small_products_ids(v_random_product_id);
+    END set_product_id_when_letter;
     
     
     PROCEDURE set_product_qty(in_list_id INTEGER) IS
     BEGIN
         at_products_lists(in_list_id).purchased_product_qty := DBMS_RANDOM.value(1, 10);
     END set_product_qty;
+    
+    
+    PROCEDURE set_product_qty_when_letter(in_list_id INTEGER) IS
+    BEGIN
+        at_products_lists(in_list_id).purchased_product_qty := DBMS_RANDOM.value(1, 2);
+    END set_product_qty_when_letter;
     
     
 BEGIN
@@ -137,14 +143,18 @@ BEGIN
             LOOP
                 set_receipt_id(idx, v_list_id);
                 set_product_id(v_list_id);
-                --at_products_lists(v_list_id).product_id := get_product_id();
                 set_product_qty(v_list_id);
-                DBMS_OUTPUT.put_line('RECEIPT_ID: ' || at_products_lists(v_list_id).receipt_id || '; PRODUCT_ID: ' || at_products_lists(v_list_id).product_id || '; PURCHASED_PRODUCT_QTY: ' || at_products_lists(v_list_id).purchased_product_qty);
+                DBMS_OUTPUT.put_line(v_list_id || '. ' || 'RECEIPT_ID: ' || at_products_lists(v_list_id).receipt_id || '; PRODUCT_ID: ' || at_products_lists(v_list_id).product_id || '; PURCHASED_PRODUCT_QTY: ' || at_products_lists(v_list_id).purchased_product_qty);
                 v_list_id := v_list_id + 1;
                 v_products_volume := v_products_volume - 1;
             END LOOP;
-       -- ELSIF is_sendby_letter(idx) THEN
-        
+        ELSIF is_sendby_letter(idx) THEN
+            set_prod_volume_when_letter();
+            set_receipt_id(idx, v_list_id);
+            set_product_id_when_letter(v_list_id);
+            set_product_qty_when_letter(v_list_id);
+            DBMS_OUTPUT.put_line(v_list_id || '. ' || 'RECEIPT_ID: ' || at_products_lists(v_list_id).receipt_id || '; PRODUCT_ID: ' || at_products_lists(v_list_id).product_id || '; PURCHASED_PRODUCT_QTY: ' || at_products_lists(v_list_id).purchased_product_qty);
+            v_list_id := v_list_id + 1;
         --ELSE
         END IF;
     END LOOP;
