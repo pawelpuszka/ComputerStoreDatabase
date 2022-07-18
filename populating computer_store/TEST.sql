@@ -68,7 +68,7 @@ and t.delivery_method_id = 4
 ;
 
 begin
-    DBMS_OUTPUT.put_line(dbms_random.value());
+    DBMS_OUTPUT.put_line(ROUND(dbms_random.value(6, 10)));
 end;
 /
 

@@ -129,6 +129,15 @@ IS
     END set_product_qty_when_letter;
     
     
+    PROCEDURE set_product_volume(in_list_id INTEGER) 
+    IS
+        v_value_1 INTEGER := DBMS_RANDOM.value(1, 10);
+        v_value_2 INTEGER := DBMS_RANDOM.value(1, 10);
+    BEGIN
+        v_products_volume := ROUND(DBMS_RANDOM.value(v_value_1, v_value_2));
+    END set_product_volume;
+    
+    
 BEGIN
     get_all_receipts();
     get_all_products_ids();
@@ -139,6 +148,7 @@ BEGIN
     LOOP
         IF is_stationary_sale(idx) THEN
             set_prod_volume_when_stationary(idx);
+        
             WHILE(v_products_volume > 0)
             LOOP
                 set_receipt_id(idx, v_list_id);
@@ -155,7 +165,16 @@ BEGIN
             set_product_qty_when_letter(v_list_id);
             DBMS_OUTPUT.put_line(v_list_id || '. ' || 'RECEIPT_ID: ' || at_products_lists(v_list_id).receipt_id || '; PRODUCT_ID: ' || at_products_lists(v_list_id).product_id || '; PURCHASED_PRODUCT_QTY: ' || at_products_lists(v_list_id).purchased_product_qty);
             v_list_id := v_list_id + 1;
-        --ELSE
+        ELSE
+            set_product_volume(idx);
+            WHILE(v_products_volume > 0)
+            LOOP
+                set_receipt_id(idx, v_list_id);
+                set_product_id(idx);
+                set_product_qty(v_list_id);
+                v_list_id := v_list_id + 1;
+                v_products_volume := v_products_volume - 1;
+            END LOOP;
         END IF;
     END LOOP;
 
