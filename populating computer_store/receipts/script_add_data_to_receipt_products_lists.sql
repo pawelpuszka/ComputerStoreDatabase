@@ -1,4 +1,4 @@
-SET SERVEROUTPUT ON;
+SET SERVEROUTPUT ON ;
 
 CREATE OR REPLACE
 PROCEDURE generate_receipt_products_lists
@@ -80,26 +80,20 @@ IS
         ELSE
             v_products_volume := DBMS_RANDOM.value(6, 10);
         END IF;
-        
     END set_prod_volume_when_stationary;
     
-    
-    FUNCTION is_sendby_letter(in_idx INTEGER) RETURN BOOLEAN IS
+    PROCEDURE set_product_volume
+    IS
+        v_value_1 INTEGER := DBMS_RANDOM.value(1, 10);
+        v_value_2 INTEGER := DBMS_RANDOM.value(1, 10);
     BEGIN
-        RETURN at_receipts(in_idx).delivery_method_id = 3;
-    END is_sendby_letter;
-    
-    PROCEDURE set_prod_volume_when_letter IS
-    BEGIN
-        v_products_volume := 1;
-    END;
-    
+        v_products_volume := ROUND(DBMS_RANDOM.value(v_value_1, v_value_2));
+    END set_product_volume;
     
     PROCEDURE set_receipt_id(in_idx INTEGER, in_list_id INTEGER) IS
     BEGIN
         at_products_lists(in_list_id).receipt_id := at_receipts(in_idx).receipt_id;    
     END set_receipt_id;
-    
     
     PROCEDURE set_product_id(in_list_id INTEGER) 
     IS
@@ -108,6 +102,29 @@ IS
         at_products_lists(in_list_id).product_id := at_all_products_ids(v_random_product_id);
     END set_product_id;
     
+    PROCEDURE set_product_qty(in_list_id INTEGER) IS
+    BEGIN
+        at_products_lists(in_list_id).purchased_product_qty := DBMS_RANDOM.value(1, 10);
+    END set_product_qty;
+    
+    PROCEDURE generate_list_for_receipt(in_idx INTEGER) IS
+    BEGIN
+        WHILE(v_products_volume > 0)
+        LOOP
+            set_receipt_id(in_idx, v_list_id);
+            set_product_id(v_list_id);
+            set_product_qty(v_list_id);
+            --DBMS_OUTPUT.put_line(v_list_id || '. ' || 'RECEIPT_ID: ' || at_products_lists(v_list_id).receipt_id || '; PRODUCT_ID: ' || at_products_lists(v_list_id).product_id || '; PURCHASED_PRODUCT_QTY: ' || at_products_lists(v_list_id).purchased_product_qty);
+            v_list_id := v_list_id + 1;
+            v_products_volume := v_products_volume - 1;
+        END LOOP;
+    END generate_list_for_receipt;
+    
+    
+    FUNCTION is_sendby_letter(in_idx INTEGER) RETURN BOOLEAN IS
+    BEGIN
+        RETURN at_receipts(in_idx).delivery_method_id = 3;
+    END is_sendby_letter;
     
     PROCEDURE set_product_id_when_letter(in_list_id INTEGER)
     IS
@@ -116,26 +133,20 @@ IS
         at_products_lists(in_list_id).product_id := at_small_products_ids(v_random_product_id);
     END set_product_id_when_letter;
     
-    
-    PROCEDURE set_product_qty(in_list_id INTEGER) IS
-    BEGIN
-        at_products_lists(in_list_id).purchased_product_qty := DBMS_RANDOM.value(1, 10);
-    END set_product_qty;
-    
-    
     PROCEDURE set_product_qty_when_letter(in_list_id INTEGER) IS
     BEGIN
         at_products_lists(in_list_id).purchased_product_qty := DBMS_RANDOM.value(1, 2);
     END set_product_qty_when_letter;
     
-    
-    PROCEDURE set_product_volume(in_list_id INTEGER) 
-    IS
-        v_value_1 INTEGER := DBMS_RANDOM.value(1, 10);
-        v_value_2 INTEGER := DBMS_RANDOM.value(1, 10);
+    PROCEDURE generate_list_for_receipt_when_sendby_letter(in_idx INTEGER) IS
     BEGIN
-        v_products_volume := ROUND(DBMS_RANDOM.value(v_value_1, v_value_2));
-    END set_product_volume;
+        set_receipt_id(in_idx, v_list_id);
+        set_product_id_when_letter(v_list_id);
+        set_product_qty_when_letter(v_list_id);
+        --DBMS_OUTPUT.put_line(v_list_id || '. ' || 'RECEIPT_ID: ' || at_products_lists(v_list_id).receipt_id || '; PRODUCT_ID: ' || at_products_lists(v_list_id).product_id || '; PURCHASED_PRODUCT_QTY: ' || at_products_lists(v_list_id).purchased_product_qty);
+        v_list_id := v_list_id + 1;
+    END ;
+    
     
     
 BEGIN
@@ -148,33 +159,12 @@ BEGIN
     LOOP
         IF is_stationary_sale(idx) THEN
             set_prod_volume_when_stationary(idx);
-        
-            WHILE(v_products_volume > 0)
-            LOOP
-                set_receipt_id(idx, v_list_id);
-                set_product_id(v_list_id);
-                set_product_qty(v_list_id);
-                DBMS_OUTPUT.put_line(v_list_id || '. ' || 'RECEIPT_ID: ' || at_products_lists(v_list_id).receipt_id || '; PRODUCT_ID: ' || at_products_lists(v_list_id).product_id || '; PURCHASED_PRODUCT_QTY: ' || at_products_lists(v_list_id).purchased_product_qty);
-                v_list_id := v_list_id + 1;
-                v_products_volume := v_products_volume - 1;
-            END LOOP;
+            generate_list_for_receipt(idx);
         ELSIF is_sendby_letter(idx) THEN
-            set_prod_volume_when_letter();
-            set_receipt_id(idx, v_list_id);
-            set_product_id_when_letter(v_list_id);
-            set_product_qty_when_letter(v_list_id);
-            DBMS_OUTPUT.put_line(v_list_id || '. ' || 'RECEIPT_ID: ' || at_products_lists(v_list_id).receipt_id || '; PRODUCT_ID: ' || at_products_lists(v_list_id).product_id || '; PURCHASED_PRODUCT_QTY: ' || at_products_lists(v_list_id).purchased_product_qty);
-            v_list_id := v_list_id + 1;
+            generate_list_for_receipt_when_sendby_letter(idx);
         ELSE
-            set_product_volume(idx);
-            WHILE(v_products_volume > 0)
-            LOOP
-                set_receipt_id(idx, v_list_id);
-                set_product_id(idx);
-                set_product_qty(v_list_id);
-                v_list_id := v_list_id + 1;
-                v_products_volume := v_products_volume - 1;
-            END LOOP;
+            set_product_volume();
+            generate_list_for_receipt(idx);
         END IF;
     END LOOP;
 
