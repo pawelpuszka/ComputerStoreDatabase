@@ -148,6 +148,20 @@ IS
     END ;
     
     
+    PROCEDURE insert_data_into_receipt_products_lists IS
+    BEGIN
+        FORALL lists IN at_products_lists.FIRST..at_products_lists.LAST
+            INSERT INTO receipt_products_lists(
+                 receipt_id
+                ,product_id
+                ,purchased_product_qty
+            )
+            VALUES(
+                 at_products_lists(lists).receipt_id
+                ,at_products_lists(lists).product_id
+                ,at_products_lists(lists).purchased_product_qty
+            );
+    END insert_data_into_receipt_products_lists;
     
 BEGIN
     get_all_receipts();
@@ -167,6 +181,8 @@ BEGIN
             generate_list_for_receipt(idx);
         END IF;
     END LOOP;
+    
+    insert_data_into_receipt_products_lists();
 
 END generate_receipt_products_lists;
 /
