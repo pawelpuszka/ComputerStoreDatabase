@@ -39,7 +39,7 @@
 
   Whole structure is designed to make sure there is possibility to deploy business processes and information flow.
 
-  Link to [database schema].
+  Link to [database schema](https://pawelpuszka.github.io).
 
 ## Populating database.
 
