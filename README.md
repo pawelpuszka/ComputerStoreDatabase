@@ -9,9 +9,9 @@
 
 ### This project is still in progress.
 
-## About.
+## About
     
-  It is project of store which sells computer hardware stationary and online. 
+  It is a project of stationary and online store which sells computer hardware. 
 
   The main goals of this project are:
 
@@ -19,7 +19,7 @@
   2. Learn how to code and solve problems in Oracle database environment using PL/SQL.
   3. Use it to get hired as a developer.
 
-### Built with.
+### Built with
     
   Oracle is technology used to design, populate and deploy main features.
     
@@ -31,7 +31,7 @@
   * Java
   * Data Modeler
   * SQL Developer
-## Designing database.
+## Designing database
 
   I've spent a lot of time to design this database according to rules. In most cases it meets requirements of the third normal form.
 
@@ -41,7 +41,7 @@
 
   Link to [database schema](https://pawelpuszka.github.io).
 
-## Populating database.
+## Populating database
 
   First step was to prepare .csv files with data for tables:
   * Addresses
