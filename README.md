@@ -12,7 +12,7 @@
 
 ## About
     
-  It is a project of stationary and online store which sells computer hardware. 
+  It is a project of transactional database for stationary and online store which sells computer hardware. 
 
   The main goals of this project are:
 
@@ -34,7 +34,7 @@
   * SQL Developer
 ## Designing database
 
-  I've spent a lot of time to design this database according to rules. In most cases it meets requirements of the third normal form.
+  I've spent a lot of time to design this database according to best practices. In most cases it meets requirements of the third normal form.
 
   It contains data, dictionary and linking tables, moreover there are defined relations between tables to keep consistency and integrity of data. 
 
