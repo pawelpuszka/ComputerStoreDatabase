@@ -16,22 +16,23 @@
 
   The main goals of this project are:
 
-  1. Learn how to design a database.
-  2. Learn how to code and solve problems in Oracle database environment using PL/SQL.
+  1. Learning how to design a database.
+  2. Learning how to code and solve problems in Oracle database environment using PL/SQL.
   3. Use it to get hired as a developer.
 
 ### Built with
     
-  Oracle is technology used to design, populate and deploy main features.
+  Oracle technology is used to design, populate and deploy main features.
     
   Tools:
 
-  * Autonomous Database (ATP) ver.19c 
-  * PL/SQL
-  * SQL
-  * Java
-  * Data Modeler
-  * SQL Developer
+  * `Autonomous Database (ATP)` `ver.19c` 
+  * `PL/SQL`
+  * `SQL`
+  * `Java`
+  * `Data Modeler`
+  * `SQL Developer`
+  
 ## Designing database
 
   I've spent a lot of time to design this database according to best practices. In most cases it meets requirements of the third normal form.
@@ -44,16 +45,24 @@
 
 ## Populating database
 
-  First step was to prepare .csv files with data for tables:
-  * Addresses
-  * Employees
-  * Products
-  * Transactions
-  * Clients
+First step was to prepare .csv files with data for tables:
+* Addresses
+* Employees
+* Products
+* Transactions
+* Clients
   
-  In this case `Java` with `Jsoup` was very helpful to get some data from random websites.
+In this case `Java` with `Jsoup` was very helpful to get some data from random websites.
   
-  Then I had to generate other  
+Next steps were pretty similar. I had to write scripts, using PL/SQL, for every table in database to populate it with consistent data.
+
+The best way to show this process is an example of filling **Transactions** table.
+
+
+
+1. Setting **delivery_id** is simple
+
+ 
 
 
 my database project
