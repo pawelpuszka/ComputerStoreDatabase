@@ -50,9 +50,9 @@
   * Transactions
   * Clients
   
-  In this case Java with Jsoup was very helpful to get some data from random websites.
+  In this case `Java` with `Jsoup` was very helpful to get some data from random websites.
   
-  Then I had to code some scripts in PL/SQL to generate 
+  Then I had to generate other  
 
 
 my database project
