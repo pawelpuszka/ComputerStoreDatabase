@@ -58,10 +58,25 @@ Next steps were pretty similar. I had to write scripts, using PL/SQL, for every 
 
 The best way to show this process is an example of filling **Transactions** table.
 
+![transactions](https://github.com/pawelpuszka/pawelpuszka.github.io/blob/f626cc0c104af520fa648c0d946f1c0d8f21af38/transactions_table.png)
 
 
-1. Setting **delivery_id** is simple
+I need to mention that I widely use:
+* `DBMS_RANDOM` package and its `value()` function, which returns a random number from a defined range.
+* `associative array` collection
 
+1. Setting **delivery_method_id**. There are four possibilities to deliver a product to customer. So numbers in 1 to 4 range are randomly assigned.
+    * I had to set **delivery_method_id** as a first because it divided transactions into online and stationary. It was very important.
+2. Setting **payment_method_id**. There are also four possibilities to randomly assign the value, but there are some restrictions.
+    * While I was setting **payment_method_id** I knew if transaction was stationary then it couldn't be paid with bank transfer. 
+    * If was online it couldn't be paid with cash.
+3. Setting **employee_id** to associate salesman with transaction.
+    * There are two types of salesmen: those operating in stationary store (assigned only to stationary transactions) and those operating online (assigned only when        products have to be deliver by post office or courier). 
+4. Setting transaction's **status_id**. 
+    * Stationary sale is fast so **status_id** is set to **finished** no matter how customer paid in that transaction.
+    * Online transactions depends on **payment_method_id**.
+        * When it's paid with card or blik then status of transaction should be set as cancelled or finished because that kind of sale is also fast.
+        * When it's paid with bank transfer then status of transaction could be set as new, pending, cancelled or finished.
  
 
 
