@@ -62,8 +62,9 @@ The best way to show this process is an example of filling **Transactions** tabl
 
 
 I need to mention that I widely use:
-* `DBMS_RANDOM` package and its `value()` function, which returns a random number from a defined range.
-* `associative array` collection
+* `DBMS_RANDOM` package and its `value()` function, which returns a random number from a defined range
+* `associative array` collection (aka index-by table)
+* `stored procedures` which are divided into subprograms (procedures and functions)
 
 1. Setting **delivery_method_id**. There are four possibilities to deliver a product to customer. So numbers in 1 to 4 range are randomly assigned.
     * I had to set **delivery_method_id** as a first because it divided transactions into online and stationary. It was very important.
@@ -73,10 +74,13 @@ I need to mention that I widely use:
 3. Setting **employee_id** to associate salesman with transaction.
     * There are two types of salesmen: those operating in stationary store (assigned only to stationary transactions) and those operating online (assigned only when        products have to be deliver by post office or courier). 
 4. Setting transaction's **status_id**. 
-    * Stationary sale is fast so **status_id** is set to **finished** no matter how customer paid in that transaction.
+    * Stationary sale is fast so **status_id** is set to **finished** regardless of how the customer paid in this transaction.
     * Online transactions depends on **payment_method_id**.
-        * When it's paid with card or blik then status of transaction should be set as cancelled or finished because that kind of sale is also fast.
-        * When it's paid with bank transfer then status of transaction could be set as new, pending, cancelled or finished.
+        * When it was paid with card or blik then status of transaction should be set as cancelled or finished because such kind of sales are also fast.
+        * When it was paid with bank transfer then status of transaction should be set as new, pending, cancelled or finished since money could not be posted yet or             several other reasons.
+5. Generating dates - start and end of transaction. This is kinda complicated because I needed to consider many cases which one of the most important was that       transaction cannot be carried out by an employee whose date of employment is later then start date of transaction.
+
+Take a look at the [code](https://github.com/pawelpuszka/ComputerStoreDatabase/blob/e1f8632ab00134c82cecb8099c6296f24ae98c3c/populating%20computer_store/transactions/script_add_data_to_transactions.sql) for more information.
  
 
 
