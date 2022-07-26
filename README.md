@@ -35,9 +35,20 @@ Oracle technology is used to design, populate and deploy main features.
 
 ## Getting started
 
-### Installing SQL Developer
+### Prerequisites
+
+1. `SQL Developer` is a Oracle's tool designed for working with databases. You can download it [here](https://www.oracle.com/database/sqldeveloper/technologies/download/) from Oracle's website.  
+It's important to work with tool which can present basic graphical schema of tables in database. You can use Oracle's text-based SQLPlus but I don't recommend it.  
+
+There are many other IDEs such as Toad, PL/SQL Developer or DataGrip but if You want to use it You will have to find out how to connect with Oracle's Autonomous Database on your own.
+
+### Installing SQL Developer on Windows
+
+
 
 ### Connecting to database
+
+### What can You do
 
 ### 
 
@@ -64,10 +75,10 @@ First step was to prepare .csv files with data for tables:
 * Transactions
 * Clients
   
-In this case `Java` with 
-*`Jsoup` was very helpful to get some data from random websites
-*`OpenCSV` to manipulate .csv files
-*`Faker` to generate some data
+In this case `Java` with extra libraries was very helpful
+* [`Jsoup`](https://jsoup.org) was very helpful to get some data from random websites
+* [`OpenCSV`](https://www.geeksforgeeks.org/reading-csv-file-java-using-opencsv/?ref=lbp) to manipulate .csv files
+* [`Faker`](https://github.com/DiUS/java-faker) to generate some data
   
 Next steps were pretty similar. I had to write scripts, using PL/SQL, for every table in database to populate it with consistent data.
 
