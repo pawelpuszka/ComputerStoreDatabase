@@ -45,12 +45,16 @@ There are many other IDEs such as Toad, PL/SQL Developer or DataGrip but if You 
 
 ### Installing SQL Developer on Windows
 
+Process of instalation is quite simple, but if You would have a problem [here](https://docs.oracle.com/en/database/oracle/sql-developer/22.2/rptug/sql-developer-concepts-usage.html#GUID-156BEBA3-2F9B-4CE0-8E91-728581FF46AB) is documentation on the subject. 
 
+### Installing SQL Developer on Linux
 
-
-
+I have found a very good explained process of instalation on that website https://dev.to/ishakantony/how-to-install-oracle-sql-developer-on-ubuntu-20-04-3jpd
 
 ### Connecting to database
+
+
+
 
 ### What can You do
 
@@ -99,17 +103,17 @@ I need to mention that I widely use:
 
 1. **transaction_id** is increased automatically by database engine while the data is copied from collection into table. 
 2. Setting **delivery_method_id**. There are four possibilities to deliver a product to customer. So numbers in 1 to 4 range are randomly assigned.
-* I had to set **delivery_method_id** as a first because it divided transactions into online and stationary. It was very important.
+	* I had to set **delivery_method_id** as a first because it divided transactions into online and stationary. It was very important.
 3. Setting **payment_method_id**. There are also four possibilities to randomly assign the value, but there are some restrictions.
-* While I was setting **payment_method_id** I knew if transaction was stationary then it couldn't be paid with bank transfer. 
-* If was online it couldn't be paid with cash.
+	* While I was setting **payment_method_id** I knew if transaction was stationary then it couldn't be paid with bank transfer. 
+	* If transaction was online it couldn't be paid with cash.
 4. Setting **employee_id** to associate salesman with transaction.
-* There are two types of salesmen: those operating in stationary store (assigned only to stationary transactions) and those operating online (assigned only when        products have to be deliver by post office or courier). 
+	* There are two types of salesmen: those operating in stationary store (assigned only to stationary transactions) and those operating online (assigned only when        products have to be deliver by post office or courier). 
 5. Setting transaction's **status_id**. 
-* Stationary sale is fast so **status_id** is set to **finished** regardless of how the customer paid in this transaction.
-* Online transactions depends on **payment_method_id**.
-* When it was paid with card or blik then status of transaction should be set as cancelled or finished because such kind of sales are also fast.
-* When it was paid with bank transfer then status of transaction should be set as new, pending, cancelled or finished since money could not be posted yet or several other reasons.
+	* Stationary sale is fast so **status_id** is set to **finished** regardless of how the customer paid in this transaction.
+	* Online transactions depends on **payment_method_id**.
+	* When it was paid with card or blik then status of transaction should be set as cancelled or finished because such kind of sales are also fast.
+	* When it was paid with bank transfer then status of transaction should be set as new, pending, cancelled or finished since money could not be posted yet or several other reasons.
 6. Generating dates - start and end of transaction. This is kinda complicated because I needed to consider many cases which one of the most important was that       transaction cannot be carried out by an employee whose date of employment is later then start date of transaction.
 
 Take a look at the [code](https://github.com/pawelpuszka/ComputerStoreDatabase/blob/e1f8632ab00134c82cecb8099c6296f24ae98c3c/populating%20computer_store/transactions/script_add_data_to_transactions.sql) for more information.
