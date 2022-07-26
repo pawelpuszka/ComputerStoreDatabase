@@ -39,7 +39,6 @@ Oracle technology is used to design, populate and deploy main features.
 
 1. `SQL Developer` is a Oracle's tool designed for working with databases. You can download it [here](https://www.oracle.com/database/sqldeveloper/technologies/download/) from Oracle's website.  
 It's important to work with tool which can present basic graphical schema of tables in database. You can use Oracle's text-based SQLPlus but I don't recommend it.  
-
 There are many other IDEs such as Toad, PL/SQL Developer or DataGrip but if You want to use it You will have to find out how to connect with Oracle's Autonomous Database on your own.
 
 ### Installing SQL Developer on Windows
