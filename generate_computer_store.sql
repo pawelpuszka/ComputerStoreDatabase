@@ -9,12 +9,6 @@
 
 -- predefined type, no DDL - XMLTYPE
 
---ALTER TABLE addresses RENAME COLUMN "street " TO street
---ALTER TABLE addresses DROP COLUMN email;
---DROP TABLE addresses;
---ALTER TABLE addresses MODIFY  postal_code  CHAR(6 CHAR);
---ALTER TABLE addresses MODIFY  phone_number VARCHAR2(12 CHAR);
-
 CREATE TABLE addresses (
     address_id   INTEGER GENERATED ALWAYS AS IDENTITY,
     street       NVARCHAR2(100),
@@ -22,52 +16,37 @@ CREATE TABLE addresses (
     postal_code  CHAR(6 CHAR),
     phone_number VARCHAR2(11 CHAR)
 );
-
-COMMENT ON COLUMN addresses.city IS
-    'CHECK zawiera tylko litery';
-
-COMMENT ON COLUMN addresses.postal_code IS
-    'CHECK zawiera tylko liczby
-PL/SQL wpisany jako jeden ci�g znak�w ';
-
-COMMENT ON COLUMN addresses.phone_number IS
-    'CHECK zawiera tylko liczby
-PL/SQL wpisany jako jeden ci�g znak�w ';
-
 ALTER TABLE addresses ADD CONSTRAINT adresses_pk PRIMARY KEY ( address_id );
+
 
 CREATE TABLE cost_invoices (
     cost_invoice_id   INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
     cost_invoice_nr   NVARCHAR2(30) NOT NULL,
     supplier_id       SMALLINT NOT NULL,
-    tota_net_price    NUMBER(12, 2),
+    total_net_price   NUMBER(12, 2),
     total_tax         NUMBER(12, 2),
     is_paid           NUMBER,
     cost_invoice_date DATE
 );
-
 ALTER TABLE cost_invoices ADD CONSTRAINT costinvoices_pk PRIMARY KEY ( cost_invoice_id );
+ALTER TABLE cost_invoices ADD CONSTRAINT costinvoices_un UNIQUE ( cost_invoice_nr );
 
-ALTER TABLE cost_invoices ADD CONSTRAINT costinvoices__un UNIQUE ( cost_invoice_nr );
 
---ALTER TABLE delivery_methods MODIFY delivery_method_name VARCHAR2(50);
 CREATE TABLE delivery_methods (
     delivery_method_id   SMALLINT GENERATED ALWAYS AS IDENTITY NOT NULL,
     delivery_method_name VARCHAR2(50)
 );
-
 ALTER TABLE delivery_methods ADD CONSTRAINT sales_pk PRIMARY KEY ( delivery_method_id );
+
 
 CREATE TABLE employee_positions (
     position_id   SMALLINT GENERATED ALWAYS AS IDENTITY NOT NULL,
     position_name NVARCHAR2(40) NOT NULL
 );
-
 ALTER TABLE employee_positions ADD CONSTRAINT employeepositions_pk PRIMARY KEY ( position_id );
+ALTER TABLE employee_positions ADD CONSTRAINT employeepositions_name_un UNIQUE ( position_name );
 
-ALTER TABLE employee_positions ADD CONSTRAINT employeepositions__un UNIQUE ( position_name );
 
---DROP TABLE employees;
 CREATE TABLE employees (
     employee_id         INTEGER GENERATED ALWAYS AS IDENTITY,
     employee_name       NVARCHAR2(20) NOT NULL,
@@ -77,19 +56,9 @@ CREATE TABLE employees (
     address_id          INTEGER,
     contract_id         SMALLINT
 );
-
-COMMENT ON COLUMN employees.pesel IS
-    'identyfikator pesel pracownika';
-
-COMMENT ON COLUMN employees.address_id IS
-    'id adresu zamieszkania pracownika, klucz obcy powi�zany z tabel� Addresses';
-
-COMMENT ON COLUMN employees.contract_id IS
-    'id rodzaju umowy pracownika, klucy obcz powizany z tabel� EmployeeContracts';
-
 ALTER TABLE employees ADD CONSTRAINT employees_pk PRIMARY KEY ( employee_id );
 
---DROP TABLE employees_contracts;
+
 CREATE TABLE employees_contracts (
     contract_id INTEGER GENERATED ALWAYS AS IDENTITY,
     wages       NUMBER(8, 2),
@@ -98,21 +67,11 @@ CREATE TABLE employees_contracts (
     hire_date   DATE,
     end_date    DATE
 );
-
-COMMENT ON COLUMN employees_contracts.wages IS
-    'PL/SQL: musi zawiera� si� pomi�dzy wide�kami p�acowymi okre�lonymi dla ka�dego stanowiska w tabeli PayScales';
-
-COMMENT ON COLUMN employees_contracts.end_date IS
-    'NULL - oznaczenie umowy na czas nieokre�lony';
-
 ALTER TABLE employees_contracts ADD CONSTRAINT employeecontracts_pk PRIMARY KEY ( contract_id );
+ALTER TABLE employees_contracts ADD CONSTRAINT employees_contracts_posid_un UNIQUE ( position_id );
+ALTER TABLE employees_contracts ADD CONSTRAINT emp_contracts_dates_check CHECK(hire_date + 183 <= end_date); --contract has to be signed for a period of not less then 6 months 
 
-ALTER TABLE employees_contracts ADD CONSTRAINT employees_contracts__un UNIQUE ( position_id );
 
-ALTER TABLE employees_contracts ADD CONSTRAINT emp_contracts_dates_check CHECK(hire_date + 183 < end_date);
-
---ALTER TABLE income_invoices ADD payment_term_id INTEGER;
---ALTER TABLE income_invoices ADD  transaction_id  INTEGER;
 CREATE TABLE income_invoices (
     income_invoice_id   INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
     income_invoice_no   NVARCHAR2(20) NOT NULL,
@@ -124,17 +83,13 @@ CREATE TABLE income_invoices (
 );
 
 ALTER TABLE income_invoices ADD CONSTRAINT invoices_pk PRIMARY KEY ( income_invoice_id );
-
 ALTER TABLE income_invoices ADD CONSTRAINT incomeinvoices_nr_un UNIQUE ( income_invoice_nr );
-
 ALTER TABLE income_invoices
     ADD CONSTRAINT invoices_transactions_fk FOREIGN KEY ( transaction_id )
         REFERENCES transactions ( transaction_id );
-
 ALTER TABLE income_invoices
     ADD CONSTRAINT invoices_terms_FK FOREIGN KEY (payment_term_id)
     REFERENCES payment_terms (payment_term_id);
-
 ALTER TABLE income_invoices ADD CONSTRAINT payment_term_UN UNIQUE (payment_term_id);
 
 
@@ -145,10 +100,9 @@ CREATE TABLE invoice_products_lists (
     purchased_product_qty SMALLINT
 );
 
-ALTER TABLE invoice_products_lists ADD CONSTRAINT invoice_products_lists_pk PRIMARY KEY ( invoice_list_id,
-                                                                                          income_invoice_id );
+ALTER TABLE invoice_products_lists ADD CONSTRAINT invoice_products_lists_pk PRIMARY KEY ( invoice_list_id, income_invoice_id );
+ALTER TABLE invoice_products_lists ADD CONSTRAINT invoice_products_lists_un UNIQUE ( income_invoice_id );
 
-ALTER TABLE invoice_products_lists ADD CONSTRAINT invoice_products_lists__un UNIQUE ( income_invoice_id );
 
 CREATE TABLE online_storehouse (
     product_id         INTEGER NOT NULL,
@@ -156,12 +110,8 @@ CREATE TABLE online_storehouse (
     deficit_alert      SMALLINT
 );
 
-COMMENT ON COLUMN online_storehouse.online_product_qty IS
-    'pl/sql: kolumna modyfikowana w oparciu o kolumn� productInCartQuantity z tabeli Carts (zmniejszenie stanu ilo�ciowego produktu w zwi�zku ze sprzeda��) 
-Stan ilo�ciowy jest zmniejszany w momencie umieszczenia produktu w koszyku zakupowym (Carts).
-Podczas procesu biznesowego zapada decyzja o ile zwi�kszy� stan ilo�ciowy produktu poniewa� ilo�� produktu na zam�wieniu (tabela Orders kolumna onlineStoreQty)  nie musi si� zgadza� z ilo�ci� produktu dostarczonego.';
+ALTER TABLE online_storehouse ADD CONSTRAINT onlinestorehouse_pk PRIMARY KEY ( product_id );
 
-ALTER TABLE online_storehouse ADD CONSTRAINT stationarystorehousev1_pk PRIMARY KEY ( product_id );
 
 CREATE TABLE ordered_products_lists (
     order_id             INTEGER NOT NULL,
@@ -170,14 +120,8 @@ CREATE TABLE ordered_products_lists (
     online_store_qty     SMALLINT
 );
 
-COMMENT ON COLUMN ordered_products_lists.stationary_store_qty IS
-    'Quantity of products reported from stationary storehouse.';
+ALTER TABLE ordered_products_lists ADD CONSTRAINT orderedproductslist_pk PRIMARY KEY ( order_id, product_id );
 
-COMMENT ON COLUMN ordered_products_lists.online_store_qty IS
-    'Quantity of products reported from online storehouse.';
-
-ALTER TABLE ordered_products_lists ADD CONSTRAINT orderedproductslist_pk PRIMARY KEY ( order_id,
-                                                                                       product_id );
 
 CREATE TABLE orders (
     order_id        INTEGER GENERATED ALWAYS AS IDENTITY,
@@ -187,10 +131,9 @@ CREATE TABLE orders (
 );
 
 ALTER TABLE orders ADD CONSTRAINT orders_pk PRIMARY KEY ( order_id );
-
 ALTER TABLE orders ADD CONSTRAINT orders__un UNIQUE ( order_nr );
 
---DROP TABLE pay_scales;
+
 CREATE TABLE pay_scales (
     position_id SMALLINT GENERATED ALWAYS AS IDENTITY,
     min_wages   NUMBER(8, 2) NOT NULL,
@@ -199,14 +142,15 @@ CREATE TABLE pay_scales (
 
 ALTER TABLE pay_scales ADD CONSTRAINT payscales_pk PRIMARY KEY ( position_id );
 
+
 CREATE TABLE payment_methods (
     payment_method_id   SMALLINT GENERATED ALWAYS AS IDENTITY NOT NULL,
     payment_method_name NVARCHAR2(50) NOT NULL
 );
 
 ALTER TABLE payment_methods ADD CONSTRAINT paymentmethods_pk PRIMARY KEY ( payment_method_id );
-
 ALTER TABLE payment_methods ADD CONSTRAINT paymentmethods__un UNIQUE ( payment_method_name );
+
 
 CREATE TABLE product_categories (
     category_id   SMALLINT GENERATED ALWAYS AS IDENTITY NOT NULL,
@@ -214,8 +158,8 @@ CREATE TABLE product_categories (
 );
 
 ALTER TABLE product_categories ADD CONSTRAINT productcategories_pk PRIMARY KEY ( category_id );
-
 ALTER TABLE product_categories ADD CONSTRAINT productcategories__un UNIQUE ( category_name );
+
 
 CREATE TABLE PRODUCTS 
     (
@@ -225,15 +169,10 @@ CREATE TABLE PRODUCTS
     unit_price    NUMBER(8, 2) DEFAULT ON NULL 0 
     ) 
 ;
-COMMENT ON COLUMN products.product_name IS
-    'nazwa produktu	';
-
-COMMENT ON COLUMN products.unit_price IS
-    'cena netto produktu (cena w sklepie)';
 
 ALTER TABLE products ADD CONSTRAINT products_pk PRIMARY KEY ( product_id );
-
 ALTER TABLE products ADD CONSTRAINT products_unit_price_check CHECK (unit_price >= 0);
+
 
 CREATE TABLE receipt_products_lists (
     receipt_list_id       INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
@@ -242,15 +181,11 @@ CREATE TABLE receipt_products_lists (
     purchased_product_qty SMALLINT
 );
 
-ALTER TABLE receipt_products_lists ADD CONSTRAINT purchasedproductslist_pk PRIMARY KEY ( receipt_list_id,
-                                                                                         receipt_id );
-
+ALTER TABLE receipt_products_lists ADD CONSTRAINT purchasedproductslist_pk PRIMARY KEY ( receipt_list_id, receipt_id );
 ALTER TABLE receipt_products_lists ADD CONSTRAINT receipt_products_lists__un UNIQUE ( receipt_id );
-
 ALTER TABLE receipt_products_lists ADD CONSTRAINT receipt_purchased_qty_check CHECK (purchased_product_qty > 0);
 
---ALTER TABLE receipts RENAME COLUMN "receipt_no " TO receipt_no
---ALTER TABLE receipts ADD  transaction_id  INTEGER;
+
 CREATE TABLE receipts (
     receipt_id      INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
     receipt_no      NVARCHAR2(20) NOT NULL,
@@ -258,26 +193,20 @@ CREATE TABLE receipts (
     receipt_date    TIMESTAMP
 );
 
-COMMENT ON COLUMN receipts.net_amount IS
-    'kwota netto transakcji';
-
 ALTER TABLE receipts ADD CONSTRAINT receipts_pk PRIMARY KEY ( receipt_id );
-
 ALTER TABLE receipts ADD CONSTRAINT receipts__un UNIQUE ( receipt_no );
-
 ALTER TABLE receipts
     ADD CONSTRAINT receipts_transactions_fk FOREIGN KEY ( transaction_id )
         REFERENCES TRANSACTIONS ( transaction_id );
 
---DROP TABLE sections;
+
 CREATE TABLE sections (
     section_id   SMALLINT GENERATED ALWAYS AS IDENTITY NOT NULL,
     section_name VARCHAR2(100 CHAR) NOT NULL
 );
-
 ALTER TABLE sections ADD CONSTRAINT sections_pk PRIMARY KEY ( section_id );
-
 ALTER TABLE sections ADD CONSTRAINT sections_name_un UNIQUE ( section_name );
+
 
 CREATE TABLE stationary_storehouse (
     product_id       INTEGER NOT NULL,
@@ -285,12 +214,8 @@ CREATE TABLE stationary_storehouse (
     deficit_alert    SMALLINT
 );
 
-COMMENT ON COLUMN stationary_storehouse.product_quantity IS
-    'pl/sql: kolumna modyfikowana w oparciu o kolumn� productInCartQuantity z tabeli Carts (zmniejszenie stanu ilo�ciowego produktu w zwi�zku ze sprzeda��) 
-Stan ilo�ciowy jest zmniejszany w momencie rozpocz�cia transakcji.
-Podczas procesu biznesowego zapada decyzja o ile zwi�kszy� stan ilo�ciowy produktu poniewa� ilo�� produktu na zam�wieniu (tabela Orders kolumna stationaryStoreQty)  nie musi si� zgadza� z ilo�ci� produktu dostarczonego.';
-
 ALTER TABLE stationary_storehouse ADD CONSTRAINT storehouse_pk PRIMARY KEY ( product_id );
+
 
 CREATE TABLE supplied_products_lists (
     supply_id         INTEGER NOT NULL,
@@ -300,38 +225,29 @@ CREATE TABLE supplied_products_lists (
     quantity          SMALLINT
 );
 
-COMMENT ON COLUMN supplied_products_lists.product_net_price IS
-    'cena netto produktu dostarczonego
-cena netto na fakturze VAT';
-
-COMMENT ON COLUMN supplied_products_lists.tax IS
-    'podatek VAT wyrazony w liczbie dziesi�tnej';
-
-ALTER TABLE supplied_products_lists ADD CONSTRAINT suppliedproductlist_pk PRIMARY KEY ( supply_id,
-                                                                                        product_id );
-
+ALTER TABLE supplied_products_lists ADD CONSTRAINT suppliedproductlist_pk PRIMARY KEY ( supply_id, product_id );
 ALTER TABLE supplied_products_lists ADD CONSTRAINT supp_prod_lists_supplies_un UNIQUE ( supply_id );
+
 
 CREATE TABLE suppliers (
     supplier_id      SMALLINT GENERATED ALWAYS AS IDENTITY NOT NULL,
-    "supplier_name " NVARCHAR2(100) NOT NULL,
+    supplier_name    NVARCHAR2(100) NOT NULL,
     address_id       INTEGER,
     nip              NVARCHAR2(10) NOT NULL
 );
 
-COMMENT ON COLUMN suppliers."supplier_name " IS
-    'nazwa dostawcy';
-
 ALTER TABLE suppliers ADD CONSTRAINT suppliers_pkv2 PRIMARY KEY ( supplier_id );
+
 
 CREATE TABLE supplies (
     supply_id        INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
     order_nr         NVARCHAR2(20) NOT NULL,
     cost_invoice_id  INTEGER NOT NULL,
-    "delivery_date " DATE NOT NULL
+    delivery_date    DATE NOT NULL
 );
 
 ALTER TABLE supplies ADD CONSTRAINT suppliers_pk PRIMARY KEY ( supply_id );
+
 
 CREATE TABLE transaction_statuses (
     status_id   SMALLINT GENERATED ALWAYS AS IDENTITY NOT NULL,
@@ -339,14 +255,9 @@ CREATE TABLE transaction_statuses (
 );
 
 ALTER TABLE transaction_statuses ADD CONSTRAINT transactionstatus_pk PRIMARY KEY ( status_id );
-
 ALTER TABLE transaction_statuses ADD CONSTRAINT transactionstatus__un UNIQUE ( status_name );
 
---ALTER TABLE transactions DROP CONSTRAINT TRANSACTIONS_RECEIPTS_FK;
---ALTER TABLE transactions DROP CONSTRAINT TRANS_IN_INVOICES_FK;
---ALTER TABLE transactions DROP CONSTRAINT TRANSACTIONS__UN_INVOICE;
---ALTER TABLE transactions DROP CONSTRAINT TRANSACTIONS__UN_RECEIPT;
---DROP TABLE transactions;
+
 CREATE TABLE transactions (
     transaction_id     INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
     employee_id        SMALLINT,
@@ -358,12 +269,10 @@ CREATE TABLE transactions (
 );
 
 ALTER TABLE transactions ADD CONSTRAINT transactions_pk PRIMARY KEY ( transaction_id );
-
 ALTER TABLE transactions ADD CONSTRAINT transactions__un_invoice UNIQUE ( invoice_id );
-
 ALTER TABLE transactions ADD CONSTRAINT transactions__un_receipt UNIQUE ( receipt_id );
 
---DROP TABLE wholesale_clients;
+
 CREATE TABLE wholesale_clients (
     wholesale_client_id   INTEGER GENERATED ALWAYS AS IDENTITY,
     wholesale_client_name NVARCHAR2(100) NOT NULL,
@@ -374,20 +283,11 @@ CREATE TABLE wholesale_clients (
     email                 VARCHAR2(50 CHAR)
 );
 
-COMMENT ON COLUMN wholesale_clients.wholesale_client_name IS
-    'informacje o klientach hurtowych';
-
 ALTER TABLE wholesale_clients ADD CONSTRAINT clients_pk PRIMARY KEY ( wholesale_client_id );
-
-
---ALTER TABLE wholesale_clients ADD email VARCHAR2(50 CHAR);
---ALTER TABLE wholesale_clients ADD regon VARCHAR2(9 BYTE);
 ALTER TABLE wholesale_clients ADD CONSTRAINT wholesale_clients_regon_un UNIQUE ( regon );
-
 ALTER TABLE wholesale_clients ADD CONSTRAINT wholesale_clients_nip_un UNIQUE ( nip );
 
---alter table payment_terms modify payment_term_id GENERATED ALWAYS AS IDENTITY (START WITH 1);
---truncate table payment_terms;
+
 CREATE TABLE payment_terms (
     payment_term_id     INTEGER GENERATED ALWAYS AS IDENTITY, 
     payment_term_name   VARCHAR(50),
@@ -395,6 +295,7 @@ CREATE TABLE payment_terms (
     CONSTRAINT PK_payment_term PRIMARY KEY (payment_term_id),
     CONSTRAINT UN_payment_term_name UNIQUE (payment_term_name)
 );
+
 
 CREATE TABLE clients_loyalty_cards (
     loyalty_card_id	    INTEGER GENERATED ALWAYS AS IDENTITY,
@@ -470,7 +371,6 @@ ALTER TABLE receipt_products_lists
     ADD CONSTRAINT purchasedlist_products_fk FOREIGN KEY ( product_id )
         REFERENCES products ( product_id );
 
---  ERROR: FK name length exceeds maximum allowed length(30) 
 ALTER TABLE receipt_products_lists
     ADD CONSTRAINT receipt_prod_lists_receipts_fk FOREIGN KEY ( receipt_id )
         REFERENCES receipts ( receipt_id );
@@ -503,7 +403,6 @@ ALTER TABLE transactions
     ADD CONSTRAINT transactions_employees_fk FOREIGN KEY ( employee_id )
         REFERENCES employees ( employee_id );
 
-
 ALTER TABLE transactions
     ADD CONSTRAINT transactions_paymentmethods_fk FOREIGN KEY ( payment_method_id )
         REFERENCES payment_methods ( payment_method_id );
@@ -511,22 +410,6 @@ ALTER TABLE transactions
 ALTER TABLE transactions
     ADD CONSTRAINT transactions_transtatus_fk FOREIGN KEY ( status_id )
         REFERENCES transaction_statuses ( status_id );
-
-/*CREATE SEQUENCE PRODUCTS_product_ID_SEQ 
-START WITH 1 
-    NOCACHE 
-    ORDER ;
-
-CREATE OR REPLACE TRIGGER PRODUCTS_product_ID_TRG 
-BEFORE INSERT ON PRODUCTS 
-FOR EACH ROW 
-WHEN (NEW.product_ID IS NULL) 
-BEGIN
-:new.product_id := products_product_id_seq.nextval;
-
-end;
-/
-*/
 
 
 -- Oracle SQL Developer Data Modeler Summary Report: 
