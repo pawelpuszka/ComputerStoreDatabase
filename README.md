@@ -41,7 +41,8 @@ Oracle technology is used to design, populate and deploy main features.
 It's important to work with tool which can present basic graphical table schema of database. You can use Oracle's text-based SQLPlus but I don't recommend it for the reason above.  
 There are many other IDEs such as Toad, PL/SQL Developer or DataGrip but if You want to use it You will have to find out how to connect with Oracle's Autonomous Database on your own.
 
-2. Download client [credentials]() (Wallet). It's needed to authorize your client application.
+2. Download client [credentials]() (Wallet). It's needed to authorize your client application.  
+This file Wallet.zip is authenticated with password *passwd123*. It is needed for certain client applications but not for SQL Developer.
 
 ### Installing SQL Developer on Windows
 
@@ -58,7 +59,7 @@ https://www.oracleknowhow.com/install-sql-developer-on-rpm-linux/
 
 I have created a user with restricted privileges and with password on subjected database 
 * user: cs_test
-* password: passwd123
+* password: Test_password123
 
 1. Run SQL Developer
 2. At the left side of the window You should see the field named 'Connections'. 
@@ -68,6 +69,31 @@ I have created a user with restricted privileges and with password on subjected 
 If not, click option 'View' on main option bar then choose 'Connections' from the menu.
 
 ![view_conn_sqldev](https://github.com/pawelpuszka/pawelpuszka.github.io/blob/66b8c3a970160cb94cc22cacb0d1d9ce5377a8eb/view_conn_sqldev.png)
+
+3. Click on the large green cross or the adjacent menu selection button and choose 'New Database Connection'
+
+![new_db_conn](https://github.com/pawelpuszka/pawelpuszka.github.io/blob/e0408cb2becf3e6b62080a37e26908227176e45c/new_database_conn_sqldev.png) 
+
+4. Now lets set the connection to Oracle Autonomous Transaction Processing
+
+![setup_sqldev](https://github.com/pawelpuszka/pawelpuszka.github.io/blob/759c2cafcd9b3a88992d3fc376b089c476a93299/new_db_conn_setup.png)
+
+* Choose your name for the connection and type it into 'Name' field.
+* 'Database Type' leave as Oracle
+* 'Authentication Type' leave as 'default'
+* For 'Username' type: cs_test
+* For 'Password' type: Test_password123
+* 'Role' leave as it is (default)
+* For 'Connection Type' choose 'Cloud Wallet'
+* In 'Details' 
+	* In 'Configuration File' browse the downloaded Wallet.zip file
+	* You can choose the level of 'Service', but I recommend to leaave as it is
+	
+5. Click 'Test' button and You should see the message 'Status : Success'.
+
+![status_sqldev](https://github.com/pawelpuszka/pawelpuszka.github.io/blob/13e5a6a787c42d65abaa278b98051f13f6429321/status_sqldev.png) 
+
+If it's succeded then click 'Connect'. Now You are connected with Computer_store database.
 
 
 ### What can You do
