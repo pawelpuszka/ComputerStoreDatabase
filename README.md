@@ -56,7 +56,18 @@ https://www.oracleknowhow.com/install-sql-developer-on-rpm-linux/
 
 ### Connecting to database
 
-I have created a user with  with password on subjected database 
+I have created a user with restricted privileges and with password on subjected database 
+* user: cs_test
+* password: passwd123
+
+1. Run SQL Developer
+2. At the left side of the window You should see the field named 'Connections'. 
+
+![field_conn_sqldev](https://github.com/pawelpuszka/pawelpuszka.github.io/blob/76ce12fc8b375518f02a7f76b3a9b2ccc68b799c/conn_field_sqldev.png)
+
+If not, click option 'View' on main option bar then choose 'Connections' from the menu.
+
+![view_conn_sqldev](https://github.com/pawelpuszka/pawelpuszka.github.io/blob/66b8c3a970160cb94cc22cacb0d1d9ce5377a8eb/view_conn_sqldev.png)
 
 
 ### What can You do
