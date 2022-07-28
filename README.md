@@ -37,7 +37,7 @@ Oracle technology is used to design, populate and deploy main features.
 
 ### Prerequisites
 
-1. `SQL Developer` is a Oracle's client application designed for working with databases. You can download it [here](https://www.oracle.com/database/sqldeveloper/technologies/download/) from Oracle's website.  
+1. `SQL Developer` is a Oracle's cross-platform client application designed for working with databases. You can download it [here](https://www.oracle.com/database/sqldeveloper/technologies/download/) from Oracle's website.  
 It's important to work with tool which can present basic graphical table schema of database. You can use Oracle's text-based SQLPlus but I don't recommend it for the reason above.  
 There are many other IDEs such as Toad, PL/SQL Developer or DataGrip but if You want to use it You will have to find out how to connect with Oracle's Autonomous Database on your own.
 
@@ -49,11 +49,14 @@ Process of instalation is quite simple, but if You would have a problem [here](h
 
 ### Installing SQL Developer on Linux
 
-I have found a very good explained process of instalation on that website https://dev.to/ishakantony/how-to-install-oracle-sql-developer-on-ubuntu-20-04-3jpd
+I have found a very good explained process of instalation for Ubuntu on that website https://dev.to/ishakantony/how-to-install-oracle-sql-developer-on-ubuntu-20-04-3jpd
+
+And that website demonstrates installation process for rpm-based distributions 
+https://www.oracleknowhow.com/install-sql-developer-on-rpm-linux/
 
 ### Connecting to database
 
-
+I have created a user with  with password on subjected database 
 
 
 ### What can You do
