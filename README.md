@@ -62,15 +62,15 @@ I have created a user with restricted privileges and with password on subjected 
 * password: Test_password123
 
 1. Run SQL Developer
-2. At the left side of the window You should see the field named 'Connections'. 
+2. At the left side of the window You should see the pane named **Connections**. 
 
 ![field_conn_sqldev](https://github.com/pawelpuszka/pawelpuszka.github.io/blob/76ce12fc8b375518f02a7f76b3a9b2ccc68b799c/conn_field_sqldev.png)
 
-If not, click option 'View' on main option bar then choose 'Connections' from the menu.
+If not, click option 'View' on main option bar then choose **Connections** from the menu.
 
 ![view_conn_sqldev](https://github.com/pawelpuszka/pawelpuszka.github.io/blob/66b8c3a970160cb94cc22cacb0d1d9ce5377a8eb/view_conn_sqldev.png)
 
-3. Click on the large green cross or the adjacent menu selection button and choose 'New Database Connection'
+3. Click on the large green cross or the adjacent menu selection button and choose **New Database Connection**
 
 ![new_db_conn](https://github.com/pawelpuszka/pawelpuszka.github.io/blob/e0408cb2becf3e6b62080a37e26908227176e45c/new_database_conn_sqldev.png) 
 
@@ -78,22 +78,26 @@ If not, click option 'View' on main option bar then choose 'Connections' from th
 
 ![setup_sqldev](https://github.com/pawelpuszka/pawelpuszka.github.io/blob/759c2cafcd9b3a88992d3fc376b089c476a93299/new_db_conn_setup.png)
 
-* Choose your name for the connection and type it into 'Name' field.
-* 'Database Type' leave as Oracle
-* 'Authentication Type' leave as 'default'
-* For 'Username' type: cs_test
-* For 'Password' type: Test_password123
-* 'Role' leave as it is (default)
-* For 'Connection Type' choose 'Cloud Wallet'
-* In 'Details' 
-	* In 'Configuration File' browse the downloaded Wallet.zip file
-	* You can choose the level of 'Service', but I recommend to leaave as it is
+* Choose your name for the connection and type it into **Name** field.
+* **Database Type** leave as *Oracle*
+* **Authentication Type** leave as *default*
+* For **Username** type: cs_test
+* For **Password** type: Test_password123
+* **Role** leave as it is (default)
+* For **Connection Type** choose *Cloud Wallet*
+* In **Details**
+	* In the **Configuration File** field find the downloaded *Wallet.zip* file
+	* You can choose the level of *Service*, but I recommend to leave as it is
 	
-5. Click 'Test' button and You should see the message 'Status : Success'.
+5. Click 'Test' button and You should see the message *Status : Success*.
 
 ![status_sqldev](https://github.com/pawelpuszka/pawelpuszka.github.io/blob/13e5a6a787c42d65abaa278b98051f13f6429321/status_sqldev.png) 
 
-If it's succeded then click 'Connect'. Now You are connected with Computer_store database.
+If it's succeded then click **Save** to save the connection in the **Connections** pane, then **Connect**. Now You are connected with *Computer_Store* database.
+
+6. To see a *Computer_Store* database graphical list of tables You have to expand the menu of newly created user (**Connections** pane), then navigate **Other Users** and expand it too. There is a list of all users in database. Find user *Computer_Store*, then **Tables**. 
+
+![computer_store_tbl_list](https://github.com/pawelpuszka/pawelpuszka.github.io/blob/c80515e21b8277328f2cbc9ee9f1e4993ded6bd4/tables_list.png)
 
 
 ### What can You do
