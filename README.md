@@ -191,7 +191,7 @@ I plan to implement these features in the nearest future:
 * Ordered_Products_Lists
 * Cost_Invoices
 * Supplies
-*Supplied_Products_Lists 
+* Supplied_Products_Lists 
 
 If You notice any problem please contact me. Any advices or guidance are welcome.
 
