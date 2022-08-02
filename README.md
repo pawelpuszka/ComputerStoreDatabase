@@ -37,7 +37,7 @@ Oracle technology is used to design, populate and deploy main features.
 
 ### Prerequisites
 
-1. `SQL Developer` is a Oracle's cross-platform client application designed for working with databases. You can download it [here](https://www.oracle.com/database/sqldeveloper/technologies/download/) from Oracle's website.  
+1. `SQL Developer` is an Oracle's cross-platform client application designed for working with databases. You can download it [here](https://www.oracle.com/database/sqldeveloper/technologies/download/) from Oracle's website.  
 It's important to work with tool which can present basic graphical table schema of database. You can use Oracle's text-based SQLPlus but I don't recommend it for the reason above.  
 There are many other IDEs such as Toad, PL/SQL Developer or DataGrip but if You want to use it You will have to find out how to connect with Oracle's Autonomous Database on your own.
 
@@ -100,9 +100,15 @@ If it's succeded then click **Save** to save the connection in the **Connections
 ![computer_store_tbl_list](https://github.com/pawelpuszka/pawelpuszka.github.io/blob/c80515e21b8277328f2cbc9ee9f1e4993ded6bd4/tables_list.png)
 
 
-### What can You do
+## How to use this database
 
-### 
+* query the database using **select** statement  
+there's no need to refer to *Computer_Store* schema because all tables have been aliased
+```sql
+select *
+from transactions
+```
+* there are no features yet, but if any are implemented, information about them will appear in this section
 
 ## How project is progressing
 
@@ -164,21 +170,41 @@ Take a look at the [code](https://github.com/pawelpuszka/ComputerStoreDatabase/b
  
 ### Features
 
-1. Adding new employee. -*not implemented yet*
+I plan to implement these features in the nearest future:
 
-2. Adding new transaction. -*not implemented yet*
+- [ ] Adding new employee. - *not implemented yet*
 
-3. Checking the stock for each product. -*not implemented yet*
+- [ ] Adding new transaction. - *not implemented yet*
 
-4. Checking the status of transaction and change it when needed. -*not implemented yet*
+- [ ] Checking the stock for each product. - *not implemented yet*
 
-5. Looking for employees' contracts which end date is shorter then 3 months. -*not implemented yet* 
+- [ ] Checking the status of transaction and change it when needed. - *not implemented yet*
+
+- [ ] Looking for employees' contracts which end date is shorter then 3 months. - *not implemented yet* 
 
 
+## Known issues
 
+1. List of not populated tables (so do not query them for data):
+* Suppliers
+* Orders
+* Ordered_Products_Lists
+* Cost_Invoices
+* Supplies
+*Supplied_Products_Lists 
+
+If You notice any problem please contact me. Any advices or guidance are welcome.
+
+## Contact
+
+Paweł Puszka
+
+email: pawel.puszka@gmail.com
+
+LinkedIn: 
+
+Project Link: 
 
      
-### solved problems
-      
-### not solved problems
+
       

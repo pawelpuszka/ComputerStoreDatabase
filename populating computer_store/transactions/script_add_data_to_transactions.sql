@@ -94,7 +94,7 @@ IS
         ELSE
             IF at_transactions(in_id).payment_method_id IN (1, 3) THEN --if paid with card(1) or blik(3)
                 LOOP
-                    v_random_id := DBMS_RANDOM.value(3, 5);
+                    v_random_id := DBMS_RANDOM.value(3, 5); --random status_id
                     at_transactions(in_id).status_id := v_random_id;
                     EXIT WHEN v_random_id IN (3, 5);
                 END LOOP;
@@ -229,7 +229,6 @@ IS
         ELSE
             set_online_sale_dates(in_id);
         END IF;
-        --dbms_output.put_line(get_hire_date(in_id) || ', ' || TO_CHAR(at_transactions(in_id).start_time, 'YYYY/MM/DD HH24:MI:SS') || ', ' || TO_CHAR(at_transactions(in_id).end_time, 'YYYY/MM/DD HH24:MI:SS'));
     END generate_dates;
     
     PROCEDURE copy_data_into_transactions_tab IS
@@ -263,13 +262,6 @@ BEGIN
         set_employee_id(next_id);
         set_status_id(next_id);
         generate_dates(next_id);
-        /*dbms_output.put_line('transaction_id: ' || at_transactions(next_id).transaction_id || 
-                             ', payment_id ' || at_transactions(next_id).payment_method_id || 
-                             ', delivery_id: ' || at_transactions(next_id).delivery_method_id || 
-                             ', employee_id: ' || at_transactions(next_id).employee_id ||
-                             ', STATUS_ID: ' || at_transactions(next_id).status_id ||
-                             ', start_date ' || at_transactions(next_id).start_time ||
-                             ', end_date ' || at_transactions(next_id).end_time);*/
     END LOOP;
     copy_data_into_transactions_tab();
 END generate_transaction_data;

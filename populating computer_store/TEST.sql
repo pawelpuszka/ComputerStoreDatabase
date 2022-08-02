@@ -95,6 +95,15 @@ from dual;
 select numtodsinterval((sysdate + 1) - sysdate, 'minute')
 from dual;
 
+select t.TRANSACTION_ID, t.START_TIME, t.END_TIME, t.STATUS_ID
+from computer_store.transactions t
+where t.PAYMENT_METHOD_ID in (1, 2 ,3) and t.DELIVERY_METHOD_ID = 4 and t.STATUS_ID != 5
+;
+
+
+ALTER SYSTEM SET  "_enable_schema_synonyms" = true SCOPE=SPFILE;
+
+create schema synonym computer_store
 
 
 
