@@ -203,7 +203,7 @@ email: pawel.puszka@gmail.com
 
 LinkedIn: 
 
-Project Link: 
+Project Link: https://github.com/pawelpuszka/ComputerStoreDatabase
 
      
 
