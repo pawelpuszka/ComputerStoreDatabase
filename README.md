@@ -116,11 +116,11 @@ This project is still tested and in progress.
   
 ### Designing database
 
-I've spent a lot of time to design this database according to best practices. In most cases it meets requirements of the third normal form.
 
-It contains data, dictionary and linking tables, moreover there are defined relations between tables to keep consistency and integrity of data. 
-
-Whole structure is designed to make sure there is possibility to deploy business processes and information flow.
+I've spent a lot of time to design this database according to best practices. In most cases it meets requirements of the third normal form.  
+It contains data, dictionary and linking tables, moreover there are defined relations between tables to keep consistency and integrity of data.  
+Whole structure is designed to make sure there is possibility to deploy business processes and information flow.  
+I used `Data Modeler` to create logical and physical database model.
 
 Link to [database schema](https://pawelpuszka.github.io).
 
