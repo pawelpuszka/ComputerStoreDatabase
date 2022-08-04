@@ -10,6 +10,22 @@
 
 ### This project is still tested and in progress.
 
+## Table of Contents
+1. [About](https://github.com/pawelpuszka/ComputerStoreDatabase#about)
+2. [Built With](https://github.com/pawelpuszka/ComputerStoreDatabase#built-with)
+	* [Tools](https://github.com/pawelpuszka/ComputerStoreDatabase#tools)
+3. [Getting started](https://github.com/pawelpuszka/ComputerStoreDatabase#getting-started)
+	* [Prerequisites](https://github.com/pawelpuszka/ComputerStoreDatabase#prerequisites)
+	* [Installing SQL Developer on Windows](https://github.com/pawelpuszka/ComputerStoreDatabase#installing-sql-developer-on-windows)
+	* [Installing SQL Developer on Linux](https://github.com/pawelpuszka/ComputerStoreDatabase#installing-sql-developer-on-linux)
+	* [Connecting to database](https://github.com/pawelpuszka/ComputerStoreDatabase#connecting-to-database)
+4. [How to use this database](https://github.com/pawelpuszka/ComputerStoreDatabase#how-to-use-this-database)
+5. [How project is progressing](https://github.com/pawelpuszka/ComputerStoreDatabase#how-project-is-progressing)
+	* [Designing database](https://github.com/pawelpuszka/ComputerStoreDatabase#designing-database)
+	* [Populating database](https://github.com/pawelpuszka/ComputerStoreDatabase#populating-database)
+	* [Features ](https://github.com/pawelpuszka/ComputerStoreDatabase#features)
+6. [Known issues](https://github.com/pawelpuszka/ComputerStoreDatabase#known-issues)
+7. [Contact](https://github.com/pawelpuszka/ComputerStoreDatabase#contact)
 ## About
     
 It is a project of transactional database for stationary and online store which sells computer hardware. 
