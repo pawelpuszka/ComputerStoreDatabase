@@ -126,7 +126,7 @@ Link to [database schema](https://pawelpuszka.github.io).
 
 ### Populating database
 
-First step was to prepare .csv files with data for tables:
+First step was to prepare CSV files with data for tables:
 * Addresses
 * Employees
 * Products
@@ -137,8 +137,10 @@ In this case `Java` with extra libraries was very helpful
 * [`Jsoup`](https://jsoup.org) was very helpful to get some data from random websites
 * [`OpenCSV`](https://www.geeksforgeeks.org/reading-csv-file-java-using-opencsv/?ref=lbp) to manipulate .csv files
 * [`Faker`](https://github.com/DiUS/java-faker) to generate some data
+
+Data from CSV files was loaded into database using Data Import Wizard - `SQL Developer` built-in tool. 
   
-Next steps were pretty similar. I had to write scripts, using PL/SQL, for every table in database to populate it with consistent data.
+Next steps were pretty similar. I had to write scripts, using PL/SQL, for every table in database to populate it with random but consistent data.
 
 The best way to show this process is an example of filling **Transactions** table.
 
@@ -172,15 +174,15 @@ Take a look at the [code](https://github.com/pawelpuszka/ComputerStoreDatabase/b
 
 I plan to implement these features in the nearest future:
 
-- [ ] Adding new employee. - *not implemented yet*
+- Adding new employee. - *not implemented yet*
 
-- [ ] Adding new transaction. - *not implemented yet*
+- Adding new transaction. - *not implemented yet*
 
-- [ ] Checking the stock for each product. - *not implemented yet*
+- Checking the stock for each product. - *not implemented yet*
 
-- [ ] Checking the status of transaction and change it when needed. - *not implemented yet*
+- Checking the status of transaction and change it when needed. - *not implemented yet*
 
-- [ ] Looking for employees' contracts which end date is shorter then 3 months. - *not implemented yet* 
+- Looking for employees' contracts which end date is shorter then 3 months. - *not implemented yet* 
 
 
 ## Known issues
