@@ -150,7 +150,7 @@ First step was to prepare CSV files with data for tables:
 * Clients
   
 In this case `Java` with extra libraries was very helpful
-* [`Jsoup`](https://jsoup.org) was very helpful to get some data from random websites
+* [`Jsoup`](https://jsoup.org) was very helpful to get data from random websites
 * [`OpenCSV`](https://www.geeksforgeeks.org/reading-csv-file-java-using-opencsv/?ref=lbp) to manipulate .csv files
 * [`Faker`](https://github.com/DiUS/java-faker) to generate some data
 
