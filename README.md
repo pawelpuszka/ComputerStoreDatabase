@@ -57,7 +57,7 @@ Oracle technology is used to design, populate and deploy main features.
 It's important to work with tool which can present basic graphical table schema of database. You can use Oracle's text-based SQLPlus but I don't recommend it for the reason above.  
 There are many other IDEs such as Toad, PL/SQL Developer or DataGrip but if You want to use it You will have to find out how to connect with Oracle's Autonomous Database on your own.
 
-2. Download client [credentials](https://github.com/pawelpuszka/ComputerStoreDatabase/blob/1945b178d4db6869da4a47aee575008dfa539a0f/credentials/Wallet.zip). It's needed to authorize your client application.  
+2. Download client [credentials](https://github.com/pawelpuszka/ComputerStoreDatabase/raw/1945b178d4db6869da4a47aee575008dfa539a0f/credentials/Wallet.zip). It's needed to authorize your client application.  
 This file Wallet.zip is authenticated with password *passwd123*. It is needed for certain client applications but not for SQL Developer.
 
 ### Installing SQL Developer on Windows
