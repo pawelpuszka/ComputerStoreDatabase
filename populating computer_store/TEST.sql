@@ -103,12 +103,122 @@ where t.PAYMENT_METHOD_ID in (1, 2 ,3) and t.DELIVERY_METHOD_ID = 4 and t.STATUS
 
 ALTER SYSTEM SET  "_enable_schema_synonyms" = true SCOPE=SPFILE;
 
-create schema synonym computer_store
+create schema synonym computer_store;
 
 
+/* usuwanie NULL z pola end_time w transakcjach z klientami hurtowymi (faktury) - na dzień dzisiejszy wszystkie transakcje są zakończone*/
+select *
+from clients_loyalty_cards;
 
+select transaction_id
+from transactions
+where delivery_method_id = 3;
 
+select t.transaction_id, t.start_time, t.end_time, t.PAYMENT_METHOD_ID, ii.wholesale_client_id, wc.LOYALTY_CARD_ID, (t.end_time - t.start_time)
+from transactions t
+    inner join income_invoices ii
+        on t.transaction_id = ii.transaction_id
+    inner join wholesale_clients wc
+        on ii.WHOLESALE_CLIENT_ID = wc.WHOLESALE_CLIENT_ID
+where --t.delivery_method_id = 4
+     t.end_time is null
+    --and ii.payment_term_id = 4
+    --and t.PAYMENT_METHOD_ID = 4
+    --and t.end_time - t.start_time < interval '45' day
+    --and t.end_time - t.start_time < interval '1' day
+;
+/
 
+declare
+    v_i             integer := 0;
+    v_random_val    timestamp;
+    v_random_val_2  integer;
+begin
+    for trans in (select t.transaction_id, rpl.receipt_id, r.PAYMENT_term_ID, t.PAYMENT_METHOD_ID, t.delivery_method_id, t.start_time, t.end_time, count(rpl.product_id)
+from receipt_products_lists rpl
+    inner join receipts r
+        on rpl.receipt_id = r.receipt_id
+    inner join transactions t
+        on r.transaction_id = t.transaction_id
+where t.end_time is null
+group by t.transaction_id, rpl.receipt_id, r.PAYMENT_term_ID, t.PAYMENT_METHOD_ID, t.delivery_method_id, t.start_time, t.end_time
+                )
+    loop
+        v_i := v_i + 1;
+        v_random_val_2 := dbms_random.value(1, 3);
+        v_random_val := trans.start_time + dbms_random.value(v_random_val_2, 7);
+        SYS.dbms_output.put_line(v_i || '. ' ||v_random_val);
+        update transactions
+        set end_time = v_random_val
+        where transaction_id = trans.transaction_id;
+    end loop;
+    commit;
+end;
+/
+
+declare
+    v_i             integer;
+    v_random_val    timestamp;
+    v_random_val_2  integer;
+begin
+    for trans in (select  t.TRANSACTION_ID, t.start_time
+                from transactions t
+                    inner join income_invoices ii
+                        on t.transaction_id = ii.transaction_id
+                where t.delivery_method_id = 1 
+                    and t.end_time is null
+                    and ii.payment_term_id = 3)
+    loop
+        v_random_val_2 := dbms_random.value(1, 14);
+        v_random_val := trans.start_time + dbms_random.value(v_random_val_2, 30);
+        SYS.dbms_output.put_line(v_i || '. ' ||v_random_val);
+        update transactions
+        set end_time = v_random_val
+        where transaction_id = trans.transaction_id;
+    end loop;
+    commit;
+end;
+/
+
+/* */
+select t.transaction_id, t.start_time, t.end_time, r.PAYMENT_term_ID, (t.end_time - t.start_time)
+from transactions t
+    inner join receipts r
+        on t.transaction_id = r.transaction_id
+where --t.delivery_method_id = 4
+     --t.end_time is null
+    --and ii.payment_term_id = 4
+    --t.PAYMENT_METHOD_ID = 4
+    --and t.end_time - t.start_time < interval '45' day
+     t.end_time - t.start_time < interval '1' day
+;
+
+select t.transaction_id, rpl.receipt_id, r.PAYMENT_term_ID, t.PAYMENT_METHOD_ID, t.delivery_method_id, t.start_time, t.end_time, count(rpl.product_id)
+from receipt_products_lists rpl
+    inner join receipts r
+        on rpl.receipt_id = r.receipt_id
+    inner join transactions t
+        on r.transaction_id = t.transaction_id
+where --t.end_time is null
+    t.end_time - t.start_time < interval '1' day
+    and t.delivery_method_id = 3
+group by t.transaction_id, rpl.receipt_id, r.PAYMENT_term_ID, t.PAYMENT_METHOD_ID, t.delivery_method_id, t.start_time, t.end_time ;
+
+select *
+from receipt_products_lists;
+
+select *
+from EMPLOYEE_POSITIONS;
+
+select *
+from employees e
+    inner join employees_contracts ec
+        on e.contract_id = ec.contract_id
+where ec.position_id in (8, 9);
+
+select *
+from transactions
+where end_time is null;
 
 
 
