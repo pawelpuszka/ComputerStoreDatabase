@@ -1,28 +1,3 @@
-SET SERVEROUTPUT ON;
-
-alter table RECEIPTS modify RECEIPT_ID GENERATED ALWAYS AS IDENTITY (START WITH 1);
-SELECT count(*)
-FROM transactions
-;
-truncate TABLE transactions;
-
-INSERT INTO payment_terms(payment_term_name, days_to_payment)
-VALUES('zerowy', 0);
-
-alter table WHOLESALE_CLIENTS add loyalty_card_id INTEGER;
-
-ALTER TABLE income_invoices MODIFY INCOME_INVOICE_NR VARCHAR2(40);
-ALTER TABLE income_invoices RENAME COLUMN income_invoice_nr TO income_invoice_no;
-ALTER TABLE income_invoices DROP CONSTRAINT PAYMENT_TERM_UN;
-ALTER TABLE INVOICE_PRODUCTS_LISTS DROP CONSTRAINT INVOICE_PRODUCTS_LISTS__UN;
-INVOICE_PRODUCTS_LISTS__UN
-
-CREATE TABLE clients_loyalty_cards (
-    loyalty_card_id	    INTEGER GENERATED ALWAYS AS IDENTITY,
-    loyalty_card_label  VARCHAR2 (15 CHAR),
-    CONSTRAINT loyalty_card_PK PRIMARY KEY (loyalty_card_id)
-);
-
 update payment_terms
 set PAYMENT_TERM_NAME = 'short'
 where PAYMENT_TERM_ID = 1;
