@@ -115,6 +115,13 @@ constraint_violation_ex         EXCEPTION;
         
     END start_new_transaction;
     
+    --PROCEDURE get_product
+    
+    PROCEDURE create_products_list IS
+    BEGIN
+        NULL;
+    END create_products_list;
+    
 END transaction_pkg;
 /
 
