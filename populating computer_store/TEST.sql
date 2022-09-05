@@ -214,6 +214,8 @@ select *
 from employees e
     inner join employees_contracts ec
         on e.contract_id = ec.contract_id
+    inner JOIN	EMPLOYEE_POSITIONS ep
+        on ec.POSITION_ID = ep.POSITION_ID
 where ec.position_id in (8, 9);
 
 select *
