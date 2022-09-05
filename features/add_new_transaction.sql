@@ -14,14 +14,18 @@ END transaction_pkg;
 CREATE OR REPLACE
 PACKAGE BODY transaction_pkg IS
 
-    constraint_violation_ex EXCEPTION;
+constraint_violation_ex         EXCEPTION;
     PRAGMA EXCEPTION_INIT(constraint_violation_ex, -02291);
-    insert_null_ex          EXCEPTION;
+    insert_null_ex              EXCEPTION;
     PRAGMA EXCEPTION_INIT(insert_null_ex, -01400);
-    incorrect_transact_ex   EXCEPTION;
-    PRAGMA EXCEPTION_INIT(incorrect_transact_ex, -20011);
-    incorrect_seller_ex     EXCEPTION;
-    PRAGMA EXCEPTION_INIT(incorrect_seller_ex, -20010);
+    incorrect_transact_ex       EXCEPTION;
+    PRAGMA EXCEPTION_INIT(incorrect_transact_ex, -20012);
+    online_seller_needed_ex     EXCEPTION;
+    PRAGMA EXCEPTION_INIT(online_seller_needed_ex, -20010);
+    stationary_seller_needed_ex EXCEPTION;
+    PRAGMA EXCEPTION_INIT(stationary_seller_needed_ex, -20011);
+    
+    v_transact_id           transactions.transaction_id%TYPE;
  
 
     PROCEDURE start_new_transaction(employee_id_in          transactions.employee_id%TYPE 
@@ -59,8 +63,10 @@ PACKAGE BODY transaction_pkg IS
                     ON  ec.contract_id = e.contract_id
             WHERE e.employee_id = employee_id_in
             ;
+            
             RETURN  v_position_id = online_seller;
         END is_online_seller;
+        
         
         PROCEDURE insert_transaction_data(employee_id_in          transactions.employee_id%TYPE 
                                         ,payment_method_id_in    transactions.payment_method_id%TYPE
@@ -68,10 +74,10 @@ PACKAGE BODY transaction_pkg IS
                                         ) IS
         BEGIN
             INSERT INTO transactions(employee_id, payment_method_id, delivery_method_id, status_id, start_time)
-            VALUES(employee_id_in, payment_method_id_in, delivery_method_id_in, 1, SYSTIMESTAMP);
-            -- potrzebny jest transaction_id aby wykonac kolejne operacje
+            VALUES(employee_id_in, payment_method_id_in, delivery_method_id_in, 1, SYSTIMESTAMP)
+            RETURNING transaction_id INTO v_transact_id;
             COMMIT;
-            DBMS_OUTPUT.put_line('Transakcja rozpoczêta.');
+            DBMS_OUTPUT.put_line('Transakcja rozpoczêta.' || v_transact_id);
         END insert_transaction_data;
                 
     BEGIN
@@ -79,13 +85,13 @@ PACKAGE BODY transaction_pkg IS
             IF is_online_seller(employee_id_in) THEN
                 insert_transaction_data(employee_id_in, payment_method_id_in, delivery_method_id_in);
             ELSE
-                RAISE_APPLICATION_ERROR(-20010, 'Wybierz odpowiedniego sprzedawcê. Transakcja online.');
+                RAISE online_seller_needed_ex;
             END IF;
         ELSIF is_stationary_transaction(delivery_method_id_in, payment_method_id_in) THEN
             IF NOT is_online_seller(employee_id_in) THEN
                 insert_transaction_data(employee_id_in, payment_method_id_in, delivery_method_id_in);
             ELSE
-                RAISE_APPLICATION_ERROR(-20010, 'Wybierz odpowiedniego sprzedawcê. Transakcja w sklepie stacjonarnym.');
+                RAISE stationary_seller_needed_ex;
             END IF;
         ELSE
             RAISE incorrect_transact_ex;
@@ -93,15 +99,19 @@ PACKAGE BODY transaction_pkg IS
  
     EXCEPTION
         WHEN constraint_violation_ex THEN
-            DBMS_OUTPUT.put_line('System nie posiada takich danych.');
             ROLLBACK;
+            RAISE;	
         WHEN insert_null_ex THEN
             ROLLBACK;
-            DBMS_OUTPUT.put_line('Wartoœc nie mo¿e by pusta.');
+            RAISE;
         WHEN incorrect_transact_ex THEN
-            DBMS_OUTPUT.put_line('Nie mo¿na ustanowic takiej transakcji.');
-        WHEN incorrect_seller_ex THEN
-            DBMS_OUTPUT.put_line(sqlerrm);
+            RAISE_APPLICATION_ERROR(-20012, 'Nie mo¿na ustanowic takiej transakcji. B³êdny sposób dostawy lub p³atnoœci.');
+        WHEN online_seller_needed_ex THEN
+            RAISE_APPLICATION_ERROR(-20010, 'Wybierz odpowiedniego sprzedawcê. Transakcja online.');
+        WHEN stationary_seller_needed_ex THEN
+            RAISE_APPLICATION_ERROR(-20011, 'Wybierz odpowiedniego sprzedawcê. Transakcja w sklepie stacjonarnym.');
+        WHEN OTHERS	THEN	
+            RAISE;
         
     END start_new_transaction;
     
@@ -109,9 +119,9 @@ END transaction_pkg;
 /
 
 BEGIN
-transaction_pkg.start_new_transaction(employee_id_in           => 7
-                                     ,payment_method_id_in     => 3
-                                     ,delivery_method_id_in    => 2
+transaction_pkg.start_new_transaction(employee_id_in           => 17
+                                     ,payment_method_id_in     => 4
+                                     ,delivery_method_id_in    => 4
                                      );
 END;
 /
