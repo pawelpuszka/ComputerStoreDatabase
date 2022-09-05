@@ -1,4 +1,19 @@
-SET SERVEROUTPUT ON;
+/*
+    File contains the package for creating the entire process of purchasing products in the store.
+    Procedures from that package provide an interface to the client application.
+    
+    file ver.: 1.0 
+    author: Pawe³ Puszka
+    
+    ChangeLog
+        20.08.2022 
+        - package specification and body created
+        - procedure start_new_transaction
+        5.09.2022
+        - improving exception handling in procedure start_new_transaction - now all exceptions have to be handled by client app 
+    
+*/
+
 
 CREATE OR REPLACE
 PACKAGE transaction_pkg IS
@@ -114,6 +129,18 @@ constraint_violation_ex         EXCEPTION;
             RAISE;
         
     END start_new_transaction;
+    
+    
+    PROCEDURE generate_invoice (client_id_in INCOME_INVOICES.WHOLESALE_CLIENT_ID%TYPE)
+    IS
+        PROCEDURE generate_invoice_number IS
+        BEGIN
+            NULL;
+        END;
+        
+    BEGIN
+        NULL;
+    END	generate_invoice;
     
     --PROCEDURE get_product
     
