@@ -22,7 +22,7 @@ PROCEDURE start_new_transaction(employee_id_in              transactions.employe
                                                 ,delivery_method_id_in   	transactions.delivery_method_id%TYPE
                                                 );
     PROCEDURE create_products_list;
-    PROCEDURE finish_transaction;
+    
 END transaction_pkg;
 /
 
@@ -40,7 +40,7 @@ IS
     stationary_seller_needed_ex 	EXCEPTION;
     pragma exception_init(stationary_seller_needed_ex, -20011);
     
-    v_transact_id           transactions.transaction_id%TYPE;
+    v_curr_transact_rec transactions%ROWTYPE;
  
 
    PROCEDURE start_new_transaction(employee_id_in               transactions.employee_id%TYPE 
@@ -90,9 +90,9 @@ IS
         BEGIN
             INSERT INTO transactions(employee_id, payment_method_id, delivery_method_id, status_id, start_time)
             VALUES(employee_id_in, payment_method_id_in, delivery_method_id_in, 1, SYSTIMESTAMP)
-            RETURNING transaction_id INTO v_transact_id;
+            RETURNING transaction_id, employee_id_in, payment_method_id, delivery_method_id, status_id, start_time, end_time INTO v_curr_transact_rec;
             COMMIT;
-            dbms_output.put_line('transakcja rozpoczêta.' || v_transact_id);
+            dbms_output.put_line('transakcja rozpoczêta ' || v_curr_transact_rec.transaction_id);
         END insert_transaction_data;
                 
     BEGIN
@@ -130,13 +130,33 @@ IS
         
     END start_new_transaction;
     
-    
     PROCEDURE generate_invoice (client_id_in income_invoices.wholesale_client_id%TYPE)
     IS
-        PROCEDURE generate_invoice_number IS
+        FUNCTION generate_invoice_number(client_id_in income_invoices.wholesale_client_id%TYPE) RETURN income_invoices.income_invoice_no%TYPE
+        IS
+            v_invoice_no    NVARCHAR2(40);
+            v_transact_no   VARCHAR2(10);
+            v_month_no      VARCHAR2(10);
+            v_year_no       VARCHAR2(10);
+            v_client_id     VARCHAR2(10);
         BEGIN
+            v_transact_no := TO_CHAR(v_curr_transact_rec.transaction_id, '999999'); 
+            v_month_no := TO_CHAR(EXTRACT(MONTH FROM v_curr_transact_rec.start_time), '99'); 
+            v_year_no := TO_CHAR(EXTRACT(YEAR FROM v_curr_transact_rec.start_time), '9999');
+            v_client_id := TO_CHAR(client_id_in, '999');
+            v_invoice_no := 'FV/' || v_transact_no || '/' || v_month_no || '/' || v_year_no || '/' || v_client_id;
+            v_invoice_no := REPLACE(v_invoice_no, ' ', '');
             
-        END;
+            RETURN v_invoice_no;
+        END generate_invoice_number;
+        
+        FUNCTION get_payment_term(client_id_in income_invoices.wholesale_client_id%TYPE) RETURN income_invoices.payment_term_id%TYPE
+        IS
+            v_payment_term_id income_invoices.payment_term_id%TYPE;
+        BEGIN
+            SELECT
+                
+        END get_payment_term;
         
     BEGIN
         NULL;
@@ -153,9 +173,9 @@ END transaction_pkg;
 /
 
 BEGIN
-transaction_pkg.start_new_transaction(employee_id_in           => 17
-                                     ,payment_method_id_in     => 4
-                                     ,delivery_method_id_in    => 4
+transaction_pkg.start_new_transaction(employee_id_in   => 17
+                                     ,payment_method_id_in     => 1
+                                     ,delivery_method_id_in    => 1
                                      );
 END;
 /
