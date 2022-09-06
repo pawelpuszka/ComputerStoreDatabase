@@ -15,7 +15,8 @@
         - start of generate_invoice procedure development
         6.09.2022
         - generate_invoice_number - procedure generates invoice number based on given data from transaction table
-        - get_payment_term
+        - get_payment_term - function returns  id of payment term based on client_id
+        - generate_invoice procedure body implemented 
          
     
 */
@@ -180,7 +181,7 @@ IS
         
     EXCEPTION --next to impementation
         WHEN OTHERS THEN
-             RAISE;
+             NULL;
     
     END	generate_invoice;
     
