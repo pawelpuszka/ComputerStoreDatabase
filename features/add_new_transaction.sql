@@ -3,14 +3,20 @@
     procedures from that package provide an interface to the client application.
     
     file ver.: 1.0 
-    author: pawe³ puszka
+    author: Pawe³ Puszka
+    contact: pawel.puszka@gmail.com
     
     changelog
         20.08.2022 
         - package specification and body created
         - procedure start_new_transaction
         5.09.2022
-        - improving exception handling in procedure start_new_transaction - now all exceptions have to be handled by client app 
+        - improving exception handling in procedure start_new_transaction - now all exceptions have to be handled by calling program
+        - start of generate_invoice procedure development
+        6.09.2022
+        - generate_invoice_number - procedure generates invoice number based on given data from transaction table
+        - get_payment_term
+         
     
 */
 
@@ -81,8 +87,7 @@ IS
             
             RETURN  v_position_id = online_seller;
         END is_online_seller;
-        
-        
+                
         PROCEDURE insert_transaction_data(employee_id_in          transactions.employee_id%TYPE 
                                                             ,payment_method_id_in    transactions.payment_method_id%TYPE
                                                             ,delivery_method_id_in   transactions.delivery_method_id%TYPE
@@ -130,8 +135,12 @@ IS
         
     END start_new_transaction;
     
-    PROCEDURE generate_invoice (client_id_in income_invoices.wholesale_client_id%TYPE)
+    
+    PROCEDURE generate_invoice(client_id_in income_invoices.wholesale_client_id%TYPE)
     IS
+        v_invoice_number income_invoices.income_invoice_no%TYPE;
+        v_payment_term   income_invoices.payment_term_id%TYPE;
+        
         FUNCTION generate_invoice_number(client_id_in income_invoices.wholesale_client_id%TYPE) RETURN income_invoices.income_invoice_no%TYPE
         IS
             v_invoice_no    NVARCHAR2(40);
@@ -150,16 +159,29 @@ IS
             RETURN v_invoice_no;
         END generate_invoice_number;
         
-        FUNCTION get_payment_term(client_id_in income_invoices.wholesale_client_id%TYPE) RETURN income_invoices.payment_term_id%TYPE
+        FUNCTION get_payment_term(client_id_in income_invoices.wholesale_client_id%TYPE) RETURN income_invoices.payment_term_id%TYPE 
         IS
-            v_payment_term_id income_invoices.payment_term_id%TYPE;
+            v_loyalty_card_id clients_loyalty_cards.loyalty_card_id%TYPE;
         BEGIN
-            SELECT
-                
+            SELECT loyalty_card_id
+            INTO v_loyalty_card_id
+            FROM wholesale_clients
+            WHERE wholesale_client_id = client_id_in
+            ;
+            RETURN computer_store_db_utils.get_payment_term_id(v_loyalty_card_id);               
         END get_payment_term;
         
     BEGIN
-        NULL;
+        v_invoice_number := generate_invoice_number(client_id_in);
+        v_payment_term := get_payment_term(client_id_in);
+        INSERT INTO income_invoices (income_invoice_no, wholesale_client_id, transaction_id, payment_term_id)
+        VALUES (v_invoice_number, client_id_in, v_curr_transact_rec.transaction_id, v_payment_term);
+        COMMIT;
+        
+    EXCEPTION --next to impementation
+        WHEN OTHERS THEN
+             RAISE;
+    
     END	generate_invoice;
     
     --procedure get_product

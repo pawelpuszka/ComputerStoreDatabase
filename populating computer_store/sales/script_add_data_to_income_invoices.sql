@@ -147,7 +147,7 @@ IS
         v_year_no       VARCHAR2(10);
         v_client_id     VARCHAR2(10);
     BEGIN
-        v_transact_no := TO_CHAR(at_invoices(in_index).transaction_id, '999999');
+        v_transact_no :=  
         v_month_no := TO_CHAR(EXTRACT(MONTH FROM at_invoices(in_index).income_invoice_date), '99');
         v_year_no := TO_CHAR(EXTRACT(YEAR FROM at_invoices(in_index).income_invoice_date), '9999');
         v_client_id := TO_CHAR(at_invoices(in_index).wholesale_client_id, '999');
