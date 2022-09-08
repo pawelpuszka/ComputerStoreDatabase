@@ -144,7 +144,7 @@ IS
         
         FUNCTION generate_invoice_number(client_id_in income_invoices.wholesale_client_id%TYPE) RETURN income_invoices.income_invoice_no%TYPE
         IS
-            v_invoice_no    NVARCHAR2(40);
+            v_invoice_no    VARCHAR2(40);
             v_transact_no   VARCHAR2(10);
             v_month_no      VARCHAR2(10);
             v_year_no       VARCHAR2(10);
