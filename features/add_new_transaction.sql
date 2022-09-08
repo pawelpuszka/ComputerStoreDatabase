@@ -24,9 +24,10 @@
 
 CREATE OR REPLACE
 PACKAGE transaction_pkg IS
-PROCEDURE start_new_transaction(employee_id_in              transactions.employee_id%TYPE 
-                                                ,payment_method_id_in   transactions.payment_method_id%TYPE
-                                                ,delivery_method_id_in   	transactions.delivery_method_id%TYPE
+    PROCEDURE new_transaction(wholesale_client_id_in  income_invoices.wholesale_client_id%TYPE DEFAULT NULL
+                                                ,sale_employee_id_in              transactions.employee_id%TYPE 
+                                                ,sale_payment_method_id_in   transactions.payment_method_id%TYPE
+                                                ,shipp_delivery_method_id_in   	transactions.delivery_method_id%TYPE
                                                 );
     PROCEDURE create_products_list;
     
@@ -40,14 +41,17 @@ IS
     pragma exception_init(constraint_violation_ex, -02291);
     insert_null_ex              			EXCEPTION;
     pragma exception_init(insert_null_ex, -01400);
-    incorrect_transact_ex       		EXCEPTION;
-    pragma exception_init(incorrect_transact_ex, -20012);
+    incorrect_transact_params_ex       		EXCEPTION;
+    pragma exception_init(incorrect_transact_params_ex, -20012);
     online_seller_needed_ex    		EXCEPTION;
     pragma exception_init(online_seller_needed_ex, -20010);
     stationary_seller_needed_ex 	EXCEPTION;
     pragma exception_init(stationary_seller_needed_ex, -20011);
+    unknown_exception_ex           EXCEPTION;
+    pragma exception_init(unknown_exception_ex, -20005);
     
-    v_curr_transact_rec transactions%ROWTYPE;
+    v_curr_transact_rec   transactions%ROWTYPE;
+    v_curr_invoice_id       income_invoices.income_invoice_id%TYPE;                                 
  
 
    PROCEDURE start_new_transaction(employee_id_in               transactions.employee_id%TYPE 
@@ -55,9 +59,9 @@ IS
                                                     ,delivery_method_id_in   	transactions.delivery_method_id%TYPE
                                                     )
     IS
-        stationary_sale     	CONSTANT integer := 4;
+        stationary_sale     	    CONSTANT integer := 4;
         cash_payment        	CONSTANT integer := 2;
-        transfer_payment    CONSTANT integer := 4;
+        transfer_payment        CONSTANT integer := 4;
         online_seller       		CONSTANT integer := 9;        
     
         FUNCTION is_online_transaction(delivery_method_id_in    transactions.delivery_method_id%TYPE
@@ -103,41 +107,37 @@ IS
                 
     BEGIN
         IF is_online_transaction(delivery_method_id_in, payment_method_id_in) THEN
-            IF is_online_seller(employee_id_in) THEN
-                insert_transaction_data(employee_id_in, payment_method_id_in, delivery_method_id_in);
+            IF is_online_seller(emp_id_in) THEN
+                insert_transaction_data(emp_id_in, payment_method_id_in, delivery_method_id_in);
             ELSE
                 RAISE online_seller_needed_ex;
             END IF;
         ELSIF is_stationary_transaction(delivery_method_id_in, payment_method_id_in) THEN
-            IF NOT is_online_seller(employee_id_in) THEN
-                insert_transaction_data(employee_id_in, payment_method_id_in, delivery_method_id_in);
+            IF NOT is_online_seller(emp_id_in) THEN
+                insert_transaction_data(emp_id_in, payment_method_id_in, delivery_method_id_in);
             ELSE
                 RAISE stationary_seller_needed_ex;
             END IF;
         ELSE
-            RAISE incorrect_transact_ex;
+            RAISE incorrect_transact_params_ex;
         END IF;
  
     EXCEPTION
-        WHEN constraint_violation_ex THEN
-            ROLLBACK;
-            RAISE;	
-        WHEN insert_null_ex THEN
-            ROLLBACK;
-            RAISE;
-        WHEN incorrect_transact_ex THEN
+        WHEN incorrect_transact_params_ex THEN
             raise_application_error(-20012, 'nie mo¿na ustanowic takiej transakcji. b³êdny sposób dostawy lub p³atnoœci.');
         WHEN online_seller_needed_ex THEN
             raise_application_error(-20010, 'wybierz odpowiedniego sprzedawcê. transakcja online.');
         WHEN stationary_seller_needed_ex THEN
             raise_application_error(-20011, 'wybierz odpowiedniego sprzedawcê. transakcja w sklepie stacjonarnym.');
-        WHEN others	THEN	
-            RAISE;
+        WHEN OTHERS THEN
+            --write to exception table
+            ROLLBACK;
+            raise_application_error(-20011, 'Wyst¹pi³ nieznany b³¹d. SprawdŸ tabelê logów.');
         
     END start_new_transaction;
     
     
-    PROCEDURE generate_invoice(client_id_in income_invoices.wholesale_client_id%TYPE)
+    PROCEDURE generate_invoice(client_id_in income_invoices.wholesale_client_id%TYPE DEFAULT NOT NULL)
     IS
         v_invoice_number income_invoices.income_invoice_no%TYPE;
         v_payment_term   income_invoices.payment_term_id%TYPE;
@@ -176,21 +176,87 @@ IS
         v_invoice_number := generate_invoice_number(client_id_in);
         v_payment_term := get_payment_term(client_id_in);
         INSERT INTO income_invoices (income_invoice_no, wholesale_client_id, transaction_id, payment_term_id)
-        VALUES (v_invoice_number, client_id_in, v_curr_transact_rec.transaction_id, v_payment_term);
+        VALUES (v_invoice_number, client_id_in, v_curr_transact_rec.transaction_id, v_payment_term)
+        RETURNING income_invoice_id INTO v_curr_invoice_id;
         COMMIT;
-        
-    EXCEPTION --next to impementation
+    EXCEPTION
         WHEN OTHERS THEN
-             NULL;
-    
+             --write to exception table
+             ROLLBACK;
+             raise_application_error(-20011, 'Wyst¹pi³ nieznany b³¹d. SprawdŸ tabelê logów.');
     END	generate_invoice;
     
-    --procedure get_product
+    PROCEDURE update_stock(product_id_in     products.product_id%TYPE
+                                        ,product_qty_in    invoice_products_lists.purchased_product_qty%TYPE
+                                        ) IS
+    BEGIN
+    
+    END update_stock;
+       
+    PROCEDURE add_product_to_list(product_id_in     products.product_id%TYPE
+                                                ,product_qty_in    invoice_products_lists.purchased_product_qty%TYPE
+                                                ) IS
+    BEGIN
+        INSERT INTO	invoice_products_lists (income_invoice_id, product_id, purchased_product_qty)
+        VALUES (v_curr_invoice_id, product_id_in, product_qty_in);
+    END add_product_to_list;
     
     PROCEDURE create_products_list IS
     BEGIN
         NULL;
     END create_products_list;
+    
+    PROCEDURE finish_transaction IS
+    BEGIN     
+        NULL;
+    END finish_transaction;
+    
+    --when customer decides to abort the transaction after commiting
+    PROCEDURE remove_transaction IS
+    BEGIN	
+        NULL;
+    END remove_transaction;
+    
+    PROCEDURE remove_invoice IS
+    BEGIN
+        NULL;
+    END remove_invoice;
+    
+    PROCEDURE remove_list IS
+    BEGIN
+        NULL;
+    END remove_list;
+    
+    
+    
+    
+    PROCEDURE new_transaction(wholesale_client_id_in            income_invoices.wholesale_client_id%TYPE DEFAULT NULL
+                                            ,sale_employee_id_in               transactions.employee_id%TYPE 
+                                            ,sale_payment_method_id_in    transactions.payment_method_id%TYPE
+                                            ,shipp_delivery_method_id_in   tansactions.delivery_method_id%TYPE
+                                            ) IS
+    BEGIN
+        start_new_transaction(employee_id_in               => sale_employee_id_in               
+                                        ,payment_method_id_in   => sale_payment_method_id_in  
+                                        ,delivery_method_id_in    => shipp_delivery_method_id_in   	
+                                        );
+        generate_invoice(wholesale_client_id_in);
+        
+    EXCEPTION	
+        WHEN constraint_violation_ex THEN
+             --write to exception table
+            ROLLBACK;
+            RAISE;	
+        WHEN insert_null_ex THEN
+             --write to exception table
+            ROLLBACK;
+            RAISE;
+        
+    END new_transaction;
+    
+    
+    
+    
     
 END transaction_pkg;
 /
