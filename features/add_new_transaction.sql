@@ -186,12 +186,7 @@ IS
              raise_application_error(-20011, 'Wyst¹pi³ nieznany b³¹d. SprawdŸ tabelê logów.');
     END	generate_invoice;
     
-    PROCEDURE update_stock(product_id_in     products.product_id%TYPE
-                                        ,product_qty_in    invoice_products_lists.purchased_product_qty%TYPE
-                                        ) IS
-    BEGIN
-    
-    END update_stock;
+   
        
     PROCEDURE add_product_to_list(product_id_in     products.product_id%TYPE
                                                 ,product_qty_in    invoice_products_lists.purchased_product_qty%TYPE
