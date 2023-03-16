@@ -3,7 +3,7 @@
     procedures from that package provide an interface to the client application.
     
     file ver.: 1.0 
-    author: Pawe³ Puszka
+    author: Paweï¿½ Puszka
     contact: pawel.puszka@gmail.com
     
     changelog
@@ -54,67 +54,67 @@ IS
     v_curr_invoice_id       income_invoices.income_invoice_id%TYPE;                                 
  
 
-   PROCEDURE start_new_transaction(employee_id_in               transactions.employee_id%TYPE 
-                                                    ,payment_method_id_in   transactions.payment_method_id%TYPE
-                                                    ,delivery_method_id_in   	transactions.delivery_method_id%TYPE
-                                                    )
+   PROCEDURE start_new_transaction(employee_id_in transactions.employee_id%TYPE
+                                ,payment_method_id_in   transactions.payment_method_id%TYPE
+                                ,delivery_method_id_in   	transactions.delivery_method_id%TYPE
+                                )
     IS
         stationary_sale     	    CONSTANT integer := 4;
         cash_payment        	CONSTANT integer := 2;
         transfer_payment        CONSTANT integer := 4;
         online_seller       		CONSTANT integer := 9;        
     
-        FUNCTION is_online_transaction(delivery_method_id_in    transactions.delivery_method_id%TYPE
-                                                  ,payment_method_id_in     transactions.payment_method_id%TYPE 
-                                                   ) RETURN BOOLEAN IS
-        BEGIN
-            RETURN delivery_method_id_in != stationary_sale AND payment_method_id_in != cash_payment;
-        END is_online_transaction;
-        
-        FUNCTION is_stationary_transaction(delivery_method_id_in    transactions.delivery_method_id%TYPE
-                                                          ,payment_method_id_in     transactions.payment_method_id%TYPE 
-                                                           ) RETURN BOOLEAN IS
-        BEGIN
-            RETURN delivery_method_id_in = stationary_sale AND payment_method_id_in != transfer_payment;
-        END is_stationary_transaction;
+            FUNCTION is_online_transaction(delivery_method_id_in    transactions.delivery_method_id%TYPE
+                                                      ,payment_method_id_in     transactions.payment_method_id%TYPE
+                                                       ) RETURN BOOLEAN IS
+            BEGIN
+                RETURN delivery_method_id_in != stationary_sale AND payment_method_id_in != cash_payment;
+            END is_online_transaction;
 
-        FUNCTION is_online_seller(employee_id_in transactions.employee_id%TYPE) RETURN BOOLEAN 
-        IS
-            v_position_id employees_contracts.position_id%TYPE;
-        BEGIN
-            SELECT position_id
-            INTO v_position_id
-            FROM employees_contracts ec
-                INNER JOIN employees E 
-                    ON  ec.contract_id = e.contract_id
-            WHERE e.employee_id = employee_id_in
-            ;
-            
-            RETURN  v_position_id = online_seller;
-        END is_online_seller;
-                
-        PROCEDURE insert_transaction_data(employee_id_in          transactions.employee_id%TYPE 
-                                                            ,payment_method_id_in    transactions.payment_method_id%TYPE
-                                                            ,delivery_method_id_in   transactions.delivery_method_id%TYPE
-                                                            ) IS
-        BEGIN
-            INSERT INTO transactions(employee_id, payment_method_id, delivery_method_id, status_id, start_time)
-            VALUES(employee_id_in, payment_method_id_in, delivery_method_id_in, 1, SYSTIMESTAMP)
-            RETURNING transaction_id, employee_id_in, payment_method_id, delivery_method_id, status_id, start_time, end_time INTO v_curr_transact_rec;
-            COMMIT;
-            dbms_output.put_line('transakcja rozpoczêta ' || v_curr_transact_rec.transaction_id);
-        END insert_transaction_data;
+            FUNCTION is_stationary_transaction(delivery_method_id_in    transactions.delivery_method_id%TYPE
+                                                              ,payment_method_id_in     transactions.payment_method_id%TYPE
+                                                               ) RETURN BOOLEAN IS
+            BEGIN
+                RETURN delivery_method_id_in = stationary_sale AND payment_method_id_in != transfer_payment;
+            END is_stationary_transaction;
+
+            FUNCTION is_online_seller(employee_id_in transactions.employee_id%TYPE) RETURN BOOLEAN
+            IS
+                v_position_id employees_contracts.position_id%TYPE;
+            BEGIN
+                SELECT position_id
+                INTO v_position_id
+                FROM employees_contracts ec
+                    INNER JOIN employees E
+                        ON  ec.contract_id = e.contract_id
+                WHERE e.employee_id = employee_id_in
+                ;
+
+                RETURN  v_position_id = online_seller;
+            END is_online_seller;
+
+            PROCEDURE insert_transaction_data(employee_id_in transactions.employee_id%TYPE
+                                            ,payment_method_id_in    transactions.payment_method_id%TYPE
+                                            ,delivery_method_id_in   transactions.delivery_method_id%TYPE
+                                            ) IS
+            BEGIN
+                INSERT INTO transactions(employee_id, payment_method_id, delivery_method_id, status_id, start_time)
+                VALUES(employee_id_in, payment_method_id_in, delivery_method_id_in, 1, sysdate)
+                RETURNING transaction_id, employee_id_in, payment_method_id, delivery_method_id, status_id, start_time, end_time INTO v_curr_transact_rec;
+                COMMIT;
+                dbms_output.put_line('transakcja rozpoczï¿½ta ' || v_curr_transact_rec.transaction_id);
+            END insert_transaction_data;
                 
     BEGIN
         IF is_online_transaction(delivery_method_id_in, payment_method_id_in) THEN
-            IF is_online_seller(emp_id_in) THEN
-                insert_transaction_data(emp_id_in, payment_method_id_in, delivery_method_id_in);
+            IF is_online_seller(employee_id_in) THEN
+                insert_transaction_data(employee_id_in, payment_method_id_in, delivery_method_id_in);
             ELSE
                 RAISE online_seller_needed_ex;
             END IF;
         ELSIF is_stationary_transaction(delivery_method_id_in, payment_method_id_in) THEN
-            IF NOT is_online_seller(emp_id_in) THEN
-                insert_transaction_data(emp_id_in, payment_method_id_in, delivery_method_id_in);
+            IF NOT is_online_seller(employee_id_in) THEN
+                insert_transaction_data(employee_id_in, payment_method_id_in, delivery_method_id_in);
             ELSE
                 RAISE stationary_seller_needed_ex;
             END IF;
@@ -124,18 +124,26 @@ IS
  
     EXCEPTION
         WHEN incorrect_transact_params_ex THEN
-            raise_application_error(-20012, 'nie mo¿na ustanowic takiej transakcji. b³êdny sposób dostawy lub p³atnoœci.');
+            raise_application_error(-20012, 'nie moï¿½na ustanowic takiej transakcji. bï¿½ï¿½dny sposï¿½b dostawy lub pï¿½atnoï¿½ci.');
         WHEN online_seller_needed_ex THEN
-            raise_application_error(-20010, 'wybierz odpowiedniego sprzedawcê. transakcja online.');
+            raise_application_error(-20010, 'wybierz odpowiedniego sprzedawcï¿½. transakcja online.');
         WHEN stationary_seller_needed_ex THEN
-            raise_application_error(-20011, 'wybierz odpowiedniego sprzedawcê. transakcja w sklepie stacjonarnym.');
+            raise_application_error(-20011, 'wybierz odpowiedniego sprzedawcï¿½. transakcja w sklepie stacjonarnym.');
         WHEN OTHERS THEN
             --write to exception table
             ROLLBACK;
-            raise_application_error(-20011, 'Wyst¹pi³ nieznany b³¹d. SprawdŸ tabelê logów.');
+            raise_application_error(-20011, 'Wystï¿½piï¿½ nieznany bï¿½ï¿½d. Sprawdï¿½ tabelï¿½ logï¿½w.');
         
     END start_new_transaction;
-    
+
+
+    PROCEDURE finish_transaction(in_transaction_id transactions.transaction_id%type) IS
+    BEGIN
+        UPDATE transactions
+        SET end_time = sysdate
+        WHERE transaction_id = in_transaction_id;
+        COMMIT;
+    END finish_transaction;
     
     PROCEDURE generate_invoice(client_id_in income_invoices.wholesale_client_id%TYPE DEFAULT NOT NULL)
     IS
@@ -183,7 +191,7 @@ IS
         WHEN OTHERS THEN
              --write to exception table
              ROLLBACK;
-             raise_application_error(-20011, 'Wyst¹pi³ nieznany b³¹d. SprawdŸ tabelê logów.');
+             raise_application_error(-20011, 'Wystï¿½piï¿½ nieznany bï¿½ï¿½d. Sprawdï¿½ tabelï¿½ logï¿½w.');
     END	generate_invoice;
     
    
@@ -201,10 +209,7 @@ IS
         NULL;
     END create_products_list;
     
-    PROCEDURE finish_transaction IS
-    BEGIN     
-        NULL;
-    END finish_transaction;
+
     
     --when customer decides to abort the transaction after commiting
     PROCEDURE remove_transaction IS
