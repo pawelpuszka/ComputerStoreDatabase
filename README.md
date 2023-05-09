@@ -57,7 +57,7 @@ Oracle technology is used to design, populate and deploy main features.
 2. `SQL Developer` is an Oracle's cross-platform client application designed for working with databases. You can download it [here](https://www.oracle.com/database/sqldeveloper/technologies/download/) from Oracle's website.  
 It's important to work with tool which can present basic graphical table schema of database. You can use Oracle's text-based SQLPlus but I don't recommend it for the reason above.  
 There are many other IDEs such as Toad, PL/SQL Developer or DataGrip but if You want to use it You will have to find out how to connect with Oracle's Autonomous Database on your own.
-3. Download client [credentials](https://github.com/pawelpuszka/ComputerStoreDatabase/blob/master/Wallet_MyPersonalDataBase.zip). It's needed to authorize your client application.  
+3. Download client [credentials](Wallet_MyPersonalDataBase.zip). It's needed to authorize your client application.  
 This file Wallet.zip is authenticated with password *passwd123*. It is needed for certain client applications but not for SQL Developer.
 
 ### Installing SQL Developer on Windows
