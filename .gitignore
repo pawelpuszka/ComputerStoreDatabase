@@ -1,6 +1,7 @@
 *.txt
 *.docx
 /populating computer_store/TEST.sql
+/test/test.sql
 *.xml
 *.iml
 .idea/
