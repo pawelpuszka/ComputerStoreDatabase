@@ -25,11 +25,11 @@ IS
 
 
 
+
     FUNCTION get_emp_with_salary_above_avg(in_section_id IN sections.section_id%type) RETURN nt_emp_type
     IS
-        ex_value_error  EXCEPTION;
-        PRAGMA EXCEPTION_INIT ( ex_value_error,  -06502);
         nt_employees    nt_emp_type := nt_emp_type();
+        first_index     CONSTANT PLS_INTEGER := 1;
     BEGIN
         SELECT
              employee_id
@@ -41,22 +41,22 @@ IS
         WHERE ec.wages > (SELECT avg(ec2.wages) FROM employees_contracts ec2
                             WHERE ec2.section_id = ec.section_id
                             GROUP BY ec2.section_id)
-            AND ec.section_id = in_section_id
-        ;
-        --w tym miejscu pokombinować z EXISTS
-        IF (nt_employees.exists(1)) then
-            dbms_output.PUT_LINE('jesr ok');
-        else
-            dbms_output.PUT_LINE('pusto');
+            AND ec.section_id = in_section_id;
+
+        IF (NOT nt_employees.exists(first_index)) THEN
+            RAISE_APPLICATION_ERROR(-20010, 'There are no employees with salary above average in section ' || in_section_id );
         END IF;
+
         RETURN nt_employees;
 
     EXCEPTION
-        --WHEN ex_value_error THEN
-            --RAISE_APPLICATION_ERROR(-20010, 'Section with ID ' || in_section_id || ' does not exist.');
         WHEN OTHERS THEN
-            --sprawdzić czy tutaj da radę zalogować jakiś wyjątek w przypadku gdy kolekcja jest pusta
+            pkg_exception_handling.LOG_EXCEPTION(sqlcode
+                                                ,sqlerrm
+                                                ,'pkg_employees_manager.get_emp_with_salary_above_avg'
+                                                ,sysdate);
             RAISE ;
     END get_emp_with_salary_above_avg;
+
 
 END pkg_employees_manager;
