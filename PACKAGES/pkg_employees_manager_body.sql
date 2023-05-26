@@ -44,6 +44,11 @@ IS
             AND ec.section_id = in_section_id
         ;
         --w tym miejscu pokombinować z EXISTS
+        IF (nt_employees.exists(1)) then
+            dbms_output.PUT_LINE('jesr ok');
+        else
+            dbms_output.PUT_LINE('pusto');
+        END IF;
         RETURN nt_employees;
 
     EXCEPTION
