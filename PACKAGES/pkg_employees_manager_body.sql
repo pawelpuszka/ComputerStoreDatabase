@@ -205,6 +205,9 @@ IS
         v_section_id := get_section_for(in_position_id);
         insert_contract_data();
 
+        --pesel validation - has to have 11 signs
+        insert_address_data();
+
         IF (in_name IS NULL ) THEN
             v_object_name := 'pkg_employees_manager.add_employee';
             RAISE_APPLICATION_ERROR(-20005, 'The name field can not be empty.');
@@ -214,8 +217,6 @@ IS
             v_object_name := 'pkg_employees_manager.add_employee';
             RAISE_APPLICATION_ERROR(-20010, 'The surname field can not be empty.');
         END IF;
-
-        insert_address_data();
 
         insert_employee_data();
 
