@@ -29,7 +29,6 @@ IS
     FUNCTION get_emp_with_salary_above_avg(in_section_id IN sections.section_id%type) RETURN nt_emp_type
     IS
         nt_employees    nt_emp_type := nt_emp_type();
-        first_index     CONSTANT PLS_INTEGER := 1;
     BEGIN
         SELECT
              employee_id
@@ -43,8 +42,8 @@ IS
                             GROUP BY ec2.section_id)
             AND ec.section_id = in_section_id;
 
-        IF (NOT nt_employees.exists(first_index)) THEN
-            RAISE_APPLICATION_ERROR(-20010, 'There are no employees with salary above average in section ' || in_section_id );
+        IF (NOT nt_employees IS NULL ) THEN
+            RAISE_APPLICATION_ERROR(-20010, 'There are no employees in section ' || in_section_id );
         END IF;
 
         RETURN nt_employees;
