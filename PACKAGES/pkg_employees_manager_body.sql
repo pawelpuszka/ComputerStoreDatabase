@@ -91,12 +91,18 @@ IS
         ret_val BOOLEAN;
 
     BEGIN
+        v_object_name := 'pkg_employees_manager.wages_in_pay_scale';
+    
         OPEN cur_wages;
         FETCH cur_wages INTO v_tmp;
         ret_val := cur_wages%FOUND;
         CLOSE cur_wages;
 
         RETURN ret_val;
+    
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE;
 
     END wages_in_pay_scale;
 
@@ -109,6 +115,8 @@ IS
     IS
         emp_num_nt nt_emp_num_type := nt_emp_num_type();
     BEGIN
+        v_object_name := 'pkg_employees_manager.employees_number_in_section';
+        
         SELECT
             REC_EMP_NUM_TYPE(count(*), s.section_name)
         BULK COLLECT INTO
@@ -125,6 +133,7 @@ IS
     EXCEPTION
         WHEN OTHERS THEN
             RAISE ;
+            
     END employees_number_in_section;
 
 
@@ -133,6 +142,8 @@ IS
     IS
         nt_employees    nt_emp_type := nt_emp_type();
     BEGIN
+         v_object_name := 'pkg_employees_manager.get_emp_with_salary_above_avg';
+            
         SELECT
              employee_id
             ,employee_name
@@ -145,7 +156,7 @@ IS
                             GROUP BY ec2.section_id)
             AND ec.section_id = in_section_id;
 
-        IF (NOT nt_employees IS NULL ) THEN
+        IF (nt_employees IS NULL ) THEN
             RAISE_APPLICATION_ERROR(-20010, 'There are no employees in section ' || in_section_id );
         END IF;
 
@@ -153,10 +164,6 @@ IS
 
     EXCEPTION
         WHEN OTHERS THEN
-            pkg_exception_handling.LOG_EXCEPTION(sqlcode
-                                                ,sqlerrm
-                                                ,'pkg_employees_manager.get_emp_with_salary_above_avg'
-                                                ,sysdate);
             RAISE ;
     END get_emp_with_salary_above_avg;
 
@@ -183,6 +190,7 @@ IS
             FUNCTION position_exists(in_position_id IN EMPLOYEES_CONTRACTS.POSITION_ID%TYPE) RETURN BOOLEAN
             IS
                 v_tmp       NUMBER;
+                v_object_name := 'pkg_employees_manager.add_employee.position_exists';
             BEGIN
                 SELECT 1
                 INTO v_tmp
@@ -195,7 +203,6 @@ IS
                 WHEN NO_DATA_FOUND THEN
                     RETURN FALSE;
                 WHEN TOO_MANY_ROWS THEN
-                    v_object_name := 'pkg_employees_manager.add_employee.position_exists';
                     RAISE_APPLICATION_ERROR(-20100, 'Inconsistent data in EMPLOYEE_POSITION. Doubled position in table.');
 
             END position_exists;
@@ -243,14 +250,13 @@ IS
 
 
     BEGIN
-
+        v_object_name := 'pkg_employees_manager.add_employee';
+         
         IF (NOT position_exists(in_position_id)) THEN
-            v_object_name := 'pkg_employees_manager.add_employee';
             RAISE_APPLICATION_ERROR(-20020, 'Wrong position id: ' || in_position_id);
         END IF;
 
         IF (NOT wages_in_pay_scale( in_wages, in_position_id)) THEN
-            v_object_name := 'pkg_employees_manager.add_employee';
             RAISE_APPLICATION_ERROR(-20025, 'Wages ' || in_wages || ' beyond the scale for this position: ' || in_position_id);
         END IF;
 
@@ -261,12 +267,10 @@ IS
         insert_address_data();
 
         IF (in_name IS NULL ) THEN
-            v_object_name := 'pkg_employees_manager.add_employee';
             RAISE_APPLICATION_ERROR(-20005, 'The name field can not be empty.');
         END IF;
 
         IF (in_surname IS NULL ) THEN
-            v_object_name := 'pkg_employees_manager.add_employee';
             RAISE_APPLICATION_ERROR(-20010, 'The surname field can not be empty.');
         END IF;
 
