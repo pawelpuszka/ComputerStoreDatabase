@@ -320,10 +320,10 @@ IS
             END fields_empty;
 
 
-            PROCEDURE update_email 
-            IS
-                 v_object_name := 'pkg_employees_manager.update_employee_data.update_email';
+            PROCEDURE update_email IS
             BEGIN
+                v_object_name := 'pkg_employees_manager.update_employee_data.update_email';
+
                 UPDATE employees
                 SET email = coalesce(in_email, email)
                 WHERE employee_id = in_employee_id;
@@ -334,7 +334,7 @@ IS
                 END IF;
                 
             EXCEPTION
-                WHEN OTHER THEN
+                WHEN OTHERS THEN
                     RAISE;
                     
             END update_email;
@@ -373,10 +373,10 @@ IS
             END update_contract;
 
 
-            PROCEDURE update_address 
-            IS
-                v_object_name := 'pkg_employees_manager.update_employee_data.update_address';
+            PROCEDURE update_address IS
             BEGIN
+                v_object_name := 'pkg_employees_manager.update_employee_data.update_address';
+
                 UPDATE addresses
                 SET street = coalesce(in_street, street)
                     ,city = coalesce(in_city, city)
