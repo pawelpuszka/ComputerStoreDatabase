@@ -320,16 +320,23 @@ IS
             END fields_empty;
 
 
-            PROCEDURE update_email IS
+            PROCEDURE update_email 
+            IS
+                 v_object_name := 'pkg_employees_manager.update_employee_data.update_email';
             BEGIN
                 UPDATE employees
                 SET email = coalesce(in_email, email)
                 WHERE employee_id = in_employee_id;
 
                 IF (SQL%ROWCOUNT = 0) THEN
-                    v_object_name := 'pkg_employees_manager.update_employee_data.update_email';
+                   
                     raise_application_error(20110, 'The employee with id ' || in_employee_id || ' does not exist');
                 END IF;
+                
+            EXCEPTION
+                WHEN OTHER THEN
+                    RAISE;
+                    
             END update_email;
 
 
@@ -362,10 +369,13 @@ IS
             EXCEPTION
                 WHEN OTHERS THEN
                     RAISE;
+                    
             END update_contract;
 
 
-            PROCEDURE update_address IS
+            PROCEDURE update_address 
+            IS
+                v_object_name := 'pkg_employees_manager.update_employee_data.update_address';
             BEGIN
                 UPDATE addresses
                 SET street = coalesce(in_street, street)
@@ -375,9 +385,13 @@ IS
                 WHERE address_id = (SELECT address_id FROM employees WHERE employee_id = in_employee_id);
 
                 IF (SQL%ROWCOUNT = 0) THEN
-                    v_object_name := 'pkg_employees_manager.update_employee_data.update_address';
                     raise_application_error(20120, 'The employee with id ' || in_employee_id || ' does''t have an address.');
                 END IF;
+                
+            EXCEPTION
+                WHEN OTHERS THEN
+                    RAISE;
+                    
             END update_address;
 
     BEGIN
