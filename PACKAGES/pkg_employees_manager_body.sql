@@ -395,8 +395,10 @@ IS
             END update_address;
 
     BEGIN
+        
+        v_object_name := 'pkg_employees_manager.update_employee_data';
+  
         IF (fields_empty()) THEN
-            v_object_name := 'pkg_employees_manager.update_employee_data';
             raise_application_error(-20100, 'Every field in the form is empty. There have to be at least one filled.' );
         END IF;
 
