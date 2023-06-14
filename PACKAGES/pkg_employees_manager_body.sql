@@ -182,7 +182,6 @@ IS
                           ,in_phone_no      IN ADDRESSES.PHONE_NUMBER%TYPE) --validation in the future
     IS
 
-
         v_section_id    SECTIONS.SECTION_ID%TYPE;
         v_contract_id   EMPLOYEES_CONTRACTS.CONTRACT_ID%TYPE;
         v_address_id    ADDRESSES.ADDRESS_ID%TYPE;
@@ -190,8 +189,9 @@ IS
             FUNCTION position_exists(in_position_id IN EMPLOYEES_CONTRACTS.POSITION_ID%TYPE) RETURN BOOLEAN
             IS
                 v_tmp       NUMBER;
-                v_object_name := 'pkg_employees_manager.add_employee.position_exists';
             BEGIN
+                v_object_name := 'pkg_employees_manager.add_employee.position_exists';
+
                 SELECT 1
                 INTO v_tmp
                 FROM employee_positions
