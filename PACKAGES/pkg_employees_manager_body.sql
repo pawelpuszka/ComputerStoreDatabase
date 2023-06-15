@@ -138,9 +138,9 @@ IS
 
 
 
-    FUNCTION get_emp_with_salary_above_avg(in_section_id IN sections.section_id%type) RETURN nt_emp_type
+    FUNCTION get_emp_with_salary_above_avg(in_section_id IN sections.section_id%type) RETURN nt_emp_basic_type
     IS
-        nt_employees    nt_emp_type := nt_emp_type();
+        nt_employees    nt_emp_basic_type := nt_emp_basic_type();
     BEGIN
          v_object_name := 'pkg_employees_manager.get_emp_with_salary_above_avg';
             
@@ -174,7 +174,6 @@ IS
                           ,in_pesel         IN EMPLOYEES.PESEL%TYPE
                           ,in_email         IN EMPLOYEES.EMAIL%TYPE
                           ,in_wages         IN EMPLOYEES_CONTRACTS.WAGES%TYPE
-                          --,in_section_id    IN EMPLOYEES_CONTRACTS.SECTION_ID%TYPE
                           ,in_position_id   IN EMPLOYEES_CONTRACTS.POSITION_ID%TYPE
                           ,in_street        IN ADDRESSES.STREET%TYPE
                           ,in_city          IN ADDRESSES.CITY%TYPE
@@ -291,7 +290,7 @@ IS
 
 
 
-    PROCEDURE update_employee_data(in_employee_id IN EMPLOYEES.employee_id%TYPE
+    PROCEDURE update_employee_data(in_employee_id   IN EMPLOYEES.employee_id%TYPE
                                   ,in_email         IN EMPLOYEES.EMAIL%TYPE DEFAULT NULL
                                   ,in_wages         IN EMPLOYEES_CONTRACTS.WAGES%TYPE DEFAULT NULL
                                   ,in_position_id   IN EMPLOYEES_CONTRACTS.POSITION_ID%TYPE DEFAULT NULL

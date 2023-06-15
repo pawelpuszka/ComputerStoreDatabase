@@ -6,10 +6,12 @@ IS
         ,employee_name      employees.employee_name%TYPE
         ,employee_surname   employees.employee_surname%TYPE
     );
-    TYPE nt_emp_type IS TABLE OF rec_emp_type;
+    TYPE nt_emp_basic_type IS TABLE OF rec_emp_type;
+
+    TYPE nt_full_emp_type IS TABLE OF employees%ROWTYPE;
 
 
-    FUNCTION get_emp_with_salary_above_avg(in_section_id IN sections.section_id%type) RETURN nt_emp_type;
+    FUNCTION get_emp_with_salary_above_avg(in_section_id IN sections.section_id%type) RETURN nt_emp_basic_type;
 
 
     FUNCTION employees_number_in_section RETURN nt_emp_num_type;
