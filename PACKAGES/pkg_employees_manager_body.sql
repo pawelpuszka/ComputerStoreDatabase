@@ -418,44 +418,4 @@ IS
 
     END update_employee_data;
 
-
-
-    --
-    FUNCTION get_employees_with_expiring_contract(in_employee_id IN EMPLOYEES.employee_id%TYPE) RETURN SYS_REFCURSOR
-    IS
-        v_emps_expiring_cotracts    SYS_REFCURSOR;
-        const_months_remaining      CONSTANT PLS_INTEGER := 6;
-    BEGIN
-        v_object_name := 'pkg_employees_manager.get_employees_with_expiring_contract';
-
-        OPEN v_emps_expiring_cotracts FOR
-            SELECT
-                 concat(emp.employee_surname, ', ', emp.employee_name) AS  employee_full_name
-                ,emp.pesel
-                ,concat(addr.street, ', ', addr.city) AS address
-                ,concat(emp.email, ', ', addr.phone_number) AS contact_details
-                ,sec.section_name
-                ,ep.position_name
-                ,ec.wages
-                ,(SELECT concat(e.employee_surname, ', ', e.employee_name) FROM employees e WHERE ec.manager_id = e.employee_id) AS manager_full_name
-                ,ec.hire_date
-                ,ec.end_date
-                ,(ec.end_date, sysdate) AS remaining_time_to_terminate
-            FROM employees emp
-                JOIN employees_contracts ec ON emp.contract_id = ec.contract_id
-                JOIN employee_positions ep ON ec.position_id = ep.position_id
-                JOIN addresses addr ON addr.address_id = emp.address_id
-                JOIN sections sec ON ec.section_id = sec.section_id
-            WHERE
-                emp.employee_id = in_employee_id
-                AND (ec.end_date, sysdate) <= const_months_remaining
-        ;
-
-        RETURN v_emps_expiring_cotracts;
-
-    EXCEPTION
-        WHEN OTHERS THEN
-            RAISE;
-    END get_employees_with_expiring_contract;
-
 END pkg_employees_manager;
