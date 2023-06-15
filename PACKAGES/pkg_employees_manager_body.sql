@@ -289,7 +289,7 @@ IS
     END add_employee;
 
 
-
+    --new manager when section is changed
     PROCEDURE update_employee_data(in_employee_id   IN EMPLOYEES.employee_id%TYPE
                                   ,in_email         IN EMPLOYEES.EMAIL%TYPE DEFAULT NULL
                                   ,in_wages         IN EMPLOYEES_CONTRACTS.WAGES%TYPE DEFAULT NULL
@@ -315,6 +315,7 @@ IS
 
                     v_ret_val := TRUE;
                 END IF;
+
                 RETURN v_ret_val;
             END fields_empty;
 
@@ -347,8 +348,14 @@ IS
             BEGIN
                 v_object_name := 'pkg_employees_manager.update_employee_data.update_contract';
                 v_section_id    := get_section_for(in_position_id);
-                v_position_id   := get_position_for(in_employee_id);
-                v_wages         := get_wages_of(in_employee_id);
+
+                IF (in_position_id IS NULL ) THEN
+                    v_position_id := get_position_for(in_employee_id);
+                END IF;
+
+                IF (in_wages IS NULL ) THEN
+                    v_wages := get_wages_of(in_employee_id);
+                END IF;
 
                 IF (NOT wages_in_pay_scale( nvl(in_wages, v_wages), v_position_id)) THEN
                     RAISE_APPLICATION_ERROR(-20025, 'Wages ' || in_wages || ' beyond the scale for this position: ' || in_position_id);

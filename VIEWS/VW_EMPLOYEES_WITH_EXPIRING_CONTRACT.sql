@@ -1,7 +1,8 @@
 CREATE OR REPLACE VIEW VW_EMPLOYEES_WITH_EXPIRING_CONTRACT
 AS
     SELECT
-        concat(emp.employee_surname || ', ', emp.employee_name) AS  employee_full_name
+         emp.employee_id
+        ,concat(emp.employee_surname || ', ', emp.employee_name) AS  employee_full_name
         ,emp.pesel
         ,concat(addr.street || ', ', addr.city) AS address
         ,concat(emp.email || ', ', addr.phone_number) AS contact_details
