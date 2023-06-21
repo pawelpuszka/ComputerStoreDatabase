@@ -2,8 +2,22 @@ name: ComputerStoreDatabase
 run-name: setting up ComputerStoreDatabase
 on: [push]
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Oracle Instant Client
+        uses: oracle-client-action@v2
   test-output:
     runs-on: ubuntu-latest
     steps:
       - name: Test Output
         run: echo "Here is a test"
+  connect-remote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Show Databases
+        run: sqlplus COMPUTER_STORE/A1c2e3d4#01011@//jdbc:oracle:thin:@mypersonaldatabase_high:1521/mypersonaldatabase_high
+
+
+
