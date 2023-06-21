@@ -2,6 +2,11 @@ name: ComputerStoreDatabase
 run-name: setting up ComputerStoreDatabase
 on: [push]
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Oracle Instant Client
+        uses: oracle/setup-oracle-client@v2
   test-output:
     runs-on: ubuntu-latest
     steps:
