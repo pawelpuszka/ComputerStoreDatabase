@@ -10,7 +10,7 @@ jobs:
       - uses: gvenzl/setup-oracle-sqlcl@main
       - name: Run SQLcl
         run: |
-           sql -s COMPUTER_STORE/A1c2e3d4#01011@//adb.eu-frankfurt-1.oraclecloud.com:1522/g8bc01281636b06_mypersonaldatabase_high.adb.oraclecloud.com
+           sql -s COMPUTER_STORE/A1c2e3d4#01011@//adb.eu-frankfurt-1.oraclecloud.com:1522/mypersonaldatabase_high
   #build:
    # runs-on: ubuntu-latest
     #steps:
