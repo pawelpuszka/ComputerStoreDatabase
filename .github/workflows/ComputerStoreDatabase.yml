@@ -2,15 +2,24 @@ name: ComputerStoreDatabase
 run-name: setting up ComputerStoreDatabase
 on: [push]
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/setup-java@17
       - uses: actions/checkout@v3
+      - uses: gvenzl/setup-oracle-sqlcl@latest
+      - name: Run SQLcl
+        run: |
+           sqlplus COMPUTER_STORE/A1c2e3d4#01011@//adb.eu-frankfurt-1.oraclecloud.com:1522/g8bc01281636b06_mypersonaldatabase_high.adb.oraclecloud.com
+  #build:
+   # runs-on: ubuntu-latest
+    #steps:
+     # - uses: actions/checkout@v3
       #- name: Set up Oracle Instant Client
       #  uses: GoodManWEN/oracle-client-action@main
-      - name: Connect to Oracle ATP
-        run: |
-          sqlplus COMPUTER_STORE/A1c2e3d4#01011@//adb.eu-frankfurt-1.oraclecloud.com:1522/g8bc01281636b06_mypersonaldatabase_high.adb.oraclecloud.com
+      #- name: Connect to Oracle ATP
+       # run: |
+         
  
 
 
