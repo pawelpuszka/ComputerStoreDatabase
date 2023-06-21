@@ -7,3 +7,12 @@ jobs:
     steps:
       - name: Test Output
         run: echo "Here is a test"
+  connect-remote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Show Databases
+        run: sqlplus COMPUTER_STORE/A1c2e3d4#01011@//jdbc:oracle:thin:@mypersonaldatabase_high:1521/mypersonaldatabase_high
+
+
+
