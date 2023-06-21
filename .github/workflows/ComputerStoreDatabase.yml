@@ -1,0 +1,9 @@
+name: ComputerStoreDatabase
+run-name: setting up ComputerStoreDatabase
+on: [push]
+jobs:
+  test-output:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test Output
+        run: echo "Here is a test"
