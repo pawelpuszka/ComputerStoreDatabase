@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Oracle Instant Client
-        uses: GoodManWEN/oracle-client-action
+        uses: GoodManWEN/oracle-client-action@v1
   test-output:
     runs-on: ubuntu-latest
     steps:
