@@ -2,7 +2,7 @@ name: ComputerStoreDatabase
 run-name: setting up ComputerStoreDatabase
 on: [push]
 jobs:
-  test:
+  connect-remote:
     runs-on: ubuntu-latest
     steps:
       #- uses: actions/setup-java@v2
