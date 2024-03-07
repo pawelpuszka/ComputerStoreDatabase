@@ -1,4 +1,4 @@
-CREATE OR REPLACE PACKAGE BODY pkg_orders_service
+CREATE OR REPLACE PACKAGE BODY pkg_transactions_service
 IS
     function start_transaction(in_employee_id in EMPLOYEES.employee_id%type)
         return transactions.transaction_id%type
@@ -27,7 +27,7 @@ IS
         values(in_employee_id, 1, sysdate)
         returning TRANSACTION_ID into v_trans_id;
 
-        commit;
+        --commit;
 
         return v_trans_id;
     exception
@@ -37,6 +37,44 @@ IS
             raise;
     end start_transaction;
 
-END pkg_orders_service;
+
+    function create_receipt(in_transaction_id TRANSACTIONS.transaction_id%type)
+        return RECEIPTS.RECEIPT_ID%type
+    is
+        v_receipt_no RECEIPTS.RECEIPT_NO%type;
+        v_receipt_id RECEIPTS.RECEIPT_ID%type;
+        v_start_time TRANSACTIONS.START_TIME%type;
+
+    begin
+        begin
+            select START_TIME
+            into v_start_time
+            from TRANSACTIONS
+            where TRANSACTION_ID = in_transaction_id;
+        exception
+            when no_data_found then
+                --log
+                raise_application_error(-20010, 'No such transaction');
+        end;
+
+        v_receipt_no := to_char(in_transaction_id) || to_char(v_start_time);
+
+        insert into RECEIPTS(receipt_no, transaction_id, payment_term_id)
+        values (v_receipt_no, in_transaction_id, (select DAYS_TO_PAYMENT from PAYMENT_TERMS where PAYMENT_TERM_NAME = 'none'))
+        returning RECEIPT_ID into v_receipt_id;
+
+        --commit;
+        return v_receipt_id;
+    exception
+        when others then
+            --maybe log
+            rollback;
+            raise;
+    end create_receipt;
+
+
+    procedure create_receipt_list
+
+END pkg_transactions_service;
 /
 
